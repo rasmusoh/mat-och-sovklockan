@@ -1,7 +1,5 @@
 // client-side js
-// run by the browser each time your view template referencing it is loaded
-
-console.log("hello world :o");
+// run by the browser each time your view template referencing it is :o");
 
 const dreams = [];
 
@@ -10,6 +8,13 @@ const dreamsForm = document.forms[0];
 const dreamInput = dreamsForm.elements["dream"];
 const dreamsList = document.getElementById("dreams");
 const clearButton = document.querySelector('#clear-dreams');
+
+let utcNow = new Date(); 
+isoDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+let now = new Date().toISOString();
+now = now.substr(0,now.length-8);
+
+document.querySelector("#eat").value = now;
 
 // request the dreams from our app's sqlite database
 fetch("/getDreams", {})
