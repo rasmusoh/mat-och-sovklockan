@@ -54,7 +54,7 @@ app.get("/activities", (request, response) => {
       );
     } else if (err) {
       console.log(err);
-      response.send('error');
+      response.send("error");
     } else {
       response.send("[]");
     }
