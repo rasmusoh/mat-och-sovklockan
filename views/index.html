@@ -20,18 +20,29 @@
   <body>
     <header>
       <h1>
-        A Dream of the Future
+        Mat och sovklockan!
       </h1>
     </header>
 
     <main>
-      <p class="bold">Oh hi,</p>
+      <p class="bold">Hallå,</p>
       
-      <p>Tell me your hopes and dreams:</p>
+      <p>Skicka in när hon åt och sov:</p>
       
       <form>
-        <input name="dream" aria-label="a new dream" type="text" maxlength="100" placeholder="Dreams!">
-        <button type="submit" id="submit-dream">Submit Dream</button>
+        <label for="eat">Åt när</label>
+        <input name="eat" aria-label="sleep from" type="datetime-local">
+        <label for="sleepTo">Till</label>
+        <input name="sleepTo" aria-label="sleep to" type="datetime-local">
+        <button type="submit" id="submit-eat">Skicka</button>
+      </form>
+      
+      <form>
+        <label for="sleepFrom">Från</label>
+        <input name="sleepFrom" aria-label="sleep from" type="datetime-local">
+        <label for="sleepTo">Till</label>
+        <input name="sleepTo" aria-label="sleep to" type="datetime-local">
+        <button type="submit" id="submit-sleep">Skicka</button>
       </form>
       
       <section class="dreams">
