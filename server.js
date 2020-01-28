@@ -25,21 +25,23 @@ const db = new sqlite3.Database(dbFile);
 db.serialize(() => {
   if (!exists) {
     db.run(
-      "CREATE TABLE Dreams (id INTEGER PRIMARY KEY AUTOINCREMENT, dream TEXT)"
+      "CREATE TABLE Ate (id INTEGER PRIMARY KEY AUTOINCREMENT, time DATETIME)"
     );
-    console.log("New table Dreams created!");
+        db.run(
+      "CREATE TABLE Slept (id INTEGER PRIMARY KEY AUTOINCREMENT, from DATETIME,to DATETIME)"
+    );
+    console.log("New tables Ate and Slept created!");
 
-    // insert default dreams
-    db.serialize(() => {
-      db.run(
-        'INSERT INTO Dreams (dream) VALUES ("Find and count some sheep"), ("Climb a really tall mountain"), ("Wash the dishes")'
-      );
-    });
   } else {
-    console.log('Database "Dreams" ready to go!');
-    db.each("SELECT * from Dreams", (err, row) => {
+    console.log('Database ready to go!');
+    db.each("SELECT * from Ate", (err, row) => {
       if (row) {
-        console.log(`record: ${row.dream}`);
+        console.log(`Ate record: ${row.time}`);
+      }
+    });
+      db.each("SELECT * from Slept", (err, row) => {
+      if (row) {
+        console.log(`Slept record: ${row.from}, ${row.to}`);
       }
     });
   }
@@ -50,22 +52,49 @@ app.get("/", (request, response) => {
   response.sendFile(`${__dirname}/views/index.html`);
 });
 
-// endpoint to get all the dreams in the database
-app.get("/getDreams", (request, response) => {
-  db.all("SELECT * from Dreams", (err, rows) => {
+// endpoint to get all the ate in the database
+app.get("/eats", (request, response) => {
+  db.all("SELECT * from Ate", (err, rows) => {
     response.send(JSON.stringify(rows));
   });
 });
 
-// endpoint to add a dream to the database
-app.post("/addDream", (request, response) => {
-  console.log(`add to dreams ${request.body.dream}`);
+// endpoint to get all the ate in the database
+app.get("/sleeps", (request, response) => {
+  db.all("SELECT * from Slept", (err, rows) => {
+    response.send(JSON.stringify(rows));
+  });
+});
+
+// endpoint to add a eating to the database
+app.post("/eats", (request, response) => {
+  console.log(`add to ate ${request.body.time}`);
 
   // DISALLOW_WRITE is an ENV variable that gets reset for new projects
   // so they can write to the database
   if (!process.env.DISALLOW_WRITE) {
-    const cleansedDream = cleanseString(request.body.dream);
-    db.run(`INSERT INTO Dreams (dream) VALUES (?)`, cleansedDream, error => {
+    const cleansedAte = cleanseString(request.body.time);
+    db.run(`INSERT INTO Ate (time) VALUES (?)`, cleansedAte, error => {
+      if (error) {
+        response.send({ message: "error!" });
+      } else {
+        response.send({ message: "success" });
+      }
+    });
+  }
+});
+
+// endpoint to add a eating to the database
+app.post("/sleeps", (request, response) => {
+  console.log(`add to slept ${request.body.from} ${request.body.to}`);
+
+  // DISALLOW_WRITE is an ENV variable that gets reset for new projects
+  // so they can write to the database
+  if (!process.env.DISALLOW_WRITE) {
+    const cleansedFrom = cleanseString(request.body.from);    
+    const cleansedTo = cleanseString(request.body.to);
+
+    db.run(`INSERT INTO Slept (from, to) VALUES (?)`, cleansedFrom, cleansedTo, error => {
       if (error) {
         response.send({ message: "error!" });
       } else {
