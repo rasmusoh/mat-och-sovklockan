@@ -103,7 +103,7 @@ app.delete("/activities", (request, response) => {
   // DISALLOW_WRITE is an ENV variable that gets reset for new projects
   // so they can write to the database
   if (!process.env.DISALLOW_WRITE) {
-    const cleansedId = cleanseString(request.body.id);
+    const cleansedId = parseInt(request.body.id);
     db.run(`DELETE FROM Activity WHERE id=?`, cleansedId, error => {
       if (error) {
         console.log(error);

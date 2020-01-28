@@ -41,6 +41,8 @@ form.sleep {
 }
 
 
+
+
 input {
   display: block;
   margin-bottom: 10px;
@@ -70,6 +72,10 @@ button:active {
 
 li {
   margin-bottom: 5px;
+}
+
+li  {
+  mar-left: 5px
 }
 
 footer {
