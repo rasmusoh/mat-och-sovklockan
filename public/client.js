@@ -5,7 +5,7 @@ const dreams = [];
 
 // define variables that reference elements on our page
 const eatForm = document.forms[0];
-const eatInput = eatForm.elements["ate"];
+const eatInput = eatForm.elements["eat"];
 const sleepForm = document.forms[1];
 const sleepFromInput = sleepForm.elements["sleepFrom"];
 const sleepToInput = sleepForm.elements["sleepTo"];
@@ -27,7 +27,7 @@ fetch("/eats", {})
   .then(res => res.json())
   .then(response => {
     response.forEach(row => {
-      appendNewActivity(row.dream);
+      appendNewActivity(row.time);
     });
   });
 
@@ -51,12 +51,10 @@ eatForm.onsubmit = event => {
     .then(response => {
       console.log(JSON.stringify(response));
     });
-  // get dream value and add it to the list
-  dreams.push(dreamInput.value);
-  appendNewDream(dreamInput.value);
+  appendNewActivity(eatInput.value);
 
   // reset form
-  dreamInput.value = "";
-  dreamInput.focus();
+  eatInput.value = toLocalTimeString(new Date());
+  eatInput.focus();
 };
 
