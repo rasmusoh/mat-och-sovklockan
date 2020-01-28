@@ -4,47 +4,45 @@
 const dreams = [];
 
 // define variables that reference elements on our page
-const dreamsForm = document.forms[0];
-const dreamInput = dreamsForm.elements["dream"];
-const dreamsList = document.getElementById("dreams");
-const clearButton = document.querySelector('#clear-dreams');
+const eatForm = document.forms[0];
+const eatInput = eatForm.elements["ate"];
+const sleepForm = document.forms[1];
+const sleepFromInput = sleepForm.elements["sleepFrom"];
+const sleepToInput = sleepForm.elements["sleepTo"];
+const activityList = document.querySelector('#activity');
 
 function toLocalTimeString(date) {
   let dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
-  dateString = dateString.substr(0,nowString.length-8);
+  dateString = dateString.substr(0,dateString.length-8);
   return dateString;
 }
 
 let now = toLocalTimeString(new Date()); 
 
-document.querySelector("#sleepFrom").value = now;
-document.querySelector("#sleepTo").value = now;
-document.querySelector("#eat").value = now;
+eatInput.value = now;
+sleepToInput.value = now;
+sleepFromInput.value = now;
 
-// request the dreams from our app's sqlite database
-fetch("/getDreams", {})
+fetch("/eats", {})
   .then(res => res.json())
   .then(response => {
     response.forEach(row => {
-      appendNewDream(row.dream);
+      appendNewActivity(row.dream);
     });
   });
 
-// a helper function that creates a list item for a given dream
-const appendNewDream = dream => {
+const appendNewActivity = activity => {
   const newListItem = document.createElement("li");
-  newListItem.innerText = dream;
-  dreamsList.appendChild(newListItem);
+  newListItem.innerText = activity;
+  activityList.appendChild(newListItem);
 };
 
-// listen for the form to be submitted and add a new dream when it is
-dreamsForm.onsubmit = event => {
-  // stop our form submission from refreshing the page
+eatForm.onsubmit = event => {
   event.preventDefault();
 
-  const data = { dream: dreamInput.value };
+  const data = { time: eatInput.valueAsDate };
 
-  fetch("/addDream", {
+  fetch("/eats", {
     method: "POST",
     body: JSON.stringify(data),
     headers: { "Content-Type": "application/json" }
@@ -62,11 +60,3 @@ dreamsForm.onsubmit = event => {
   dreamInput.focus();
 };
 
-clearButton.addEventListener('click', event => {
-  fetch("/clearDreams", {})
-    .then(res => res.json())
-    .then(response => {
-      console.log("cleared dreams");
-    });
-  dreamsList.innerHTML = "";
-});

@@ -31,24 +31,21 @@
       
       <form class="eat">
         <label for="eat">Åt när</label>
-        <input id="eat" aria-label="sleep from" type="datetime-local">
+        <input id="eat" name="eat"  aria-label="ate at" type="datetime-local">
         <button type="submit" id="submit-eat">Skicka</button>
       </form>
       
       <form class="sleep">
         <label for="sleepFrom">Från</label>
-        <input id="sleepFrom" aria-label="sleep from" type="datetime-local">
+        <input id="sleepFrom" name="sleepFrom" aria-label="sleep from" type="datetime-local">
         <label for="sleepTo">Till</label>
-        <input id="sleepTo" aria-label="sleep to" type="datetime-local">
+        <input id="sleepTo" name="sleepTo" aria-label="sleep to" type="datetime-local">
         <button type="submit" id="submit-sleep">Skicka</button>
       </form>
       
-      <section class="dreams">
-        <ul id="dreams"></ul>
-        <button id="clear-dreams">
-          Clear Dreams
-        </button>
-      </section>
+      <ol id="activity">
+        
+      </ol>
       
     </main>
 
