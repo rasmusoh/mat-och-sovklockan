@@ -82,35 +82,37 @@ app.post("/activities", (request, response) => {
           response.status(500);
           response.send({ message: "error!" });
         } else {
-          response.send({ id: });
+          db.get("select last_insert_rowid() as id", (error, row) => {
+            if (error) {
+              console.log(error);
+              response.status(500);
+              response.send({ message: "error!" });
+            } else {
+              response.send({ id: row.id });
+            }
+          });
         }
       }
     );
   }
 });
 
-app.delete('/activities', (request, response) => {
-    console.log(
-    `delete activity ${request.body.id}`
-  );
+app.delete("/activities", (request, response) => {
+  console.log(`delete activity ${request.body.id}`);
 
   // DISALLOW_WRITE is an ENV variable that gets reset for new projects
   // so they can write to the database
   if (!process.env.DISALLOW_WRITE) {
     const cleansedId = cleanseString(request.body.id);
-    db.run(
-      `DELETE FROM Activity WHERE id=?`,
-      cleansedId,
-      error => {
-        if (error) {
-          console.log(error);
-          response.status(500);
-          response.send({ message: "error!" });
-        } else {
-          response.send({ message: "success" });
-        }
+    db.run(`DELETE FROM Activity WHERE id=?`, cleansedId, error => {
+      if (error) {
+        console.log(error);
+        response.status(500);
+        response.send({ message: "error!" });
+      } else {
+        response.send({ message: "success" });
       }
-    );
+    });
   }
 });
 
