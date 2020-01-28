@@ -30,7 +30,7 @@ db.serialize(() => {
     console.log("New table Activity created!");
   } else {
     console.log("Database ready to go!");
-    db.each("SELECT * from Ate", (err, row) => {
+    db.each("SELECT * from Activity", (err, row) => {
       if (row) {
         console.log(`record: ${row.type}, ${row.fromTime}, ${row.toTime}`);
       }
@@ -45,19 +45,26 @@ app.get("/", (request, response) => {
 
 // endpoint to get all the activities in the database
 app.get("/activities", (request, response) => {
-  db.all("SELECT * from Activities", (err, rows) => {
-    response.send(
-      JSON.stringify(
-        rows.map(x => ({ type: x.type, from: x.fromTime, to: x.toTime }))
-      )
-    );
+  db.all("SELECT * from Activity", (err, rows) => {
+    if (rows) {
+      response.send(
+        JSON.stringify(
+          rows.map(x => ({ type: x.type, from: x.fromTime, to: x.toTime }))
+        )
+      );
+    } else if (err) {
+      console.log(err);
+      response.send('error');
+    } else {
+      response.send("[]");
+    }
   });
 });
 
 // endpoint to add a eating to the database
 app.post("/activities", (request, response) => {
   console.log(
-    `add to activities ${request.body.type}, ${request.body.fromTime},${request.body.toTime}`
+    `add to activities ${request.body.type}, ${request.body.from},${request.body.to}`
   );
 
   // DISALLOW_WRITE is an ENV variable that gets reset for new projects
@@ -67,12 +74,13 @@ app.post("/activities", (request, response) => {
     const cleansedFrom = cleanseString(request.body.from);
     const cleansedTo = cleanseString(request.body.to);
     db.run(
-      `INSERT INTO Activity (type, fromTime, toTime) VALUES (?)`,
+      `INSERT INTO Activity (type, fromTime, toTime) VALUES (?,?,?)`,
       cleansedType,
       cleansedFrom,
       cleansedTo,
       error => {
         if (error) {
+          console.log(error);
           response.send({ message: "error!" });
         } else {
           response.send({ message: "success" });
