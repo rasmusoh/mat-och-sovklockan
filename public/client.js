@@ -34,8 +34,13 @@ const appendNewActivity = activity => {
   } else {
    newListItem.innerText= `Hon sov från ${activity.from} till ${activity.to}`;
   }
+  newListItem.id = 'activity-'+activity.id;
   activityList.appendChild(newListItem);
 };
+
+const removeActivity = activity=> {
+  docu
+}
 
 eatForm.onsubmit = event => {
   event.preventDefault();
@@ -68,6 +73,20 @@ function sendActivity(activity) {
     .then(res => res.json())
     .then(response => {
       console.log(JSON.stringify(response));
+      activity.id = response.id;
     });
   appendNewActivity(activity);
+}
+
+function deleteActivity(activity) {
+    fetch("/activities", {
+    method: "DELETE",
+    body: JSON.stringify(activity),
+    headers: { "Content-Type": "application/json" }
+  })
+    .then(res => res.json())
+    .then(response => {
+      console.log(JSON.stringify(response));
+    });
+  removeActivity(activity);
 }

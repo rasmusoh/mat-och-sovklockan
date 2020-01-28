@@ -38,12 +38,10 @@ db.serialize(() => {
   }
 });
 
-// http://expressjs.com/en/starter/basic-routing.html
 app.get("/", (request, response) => {
   response.sendFile(`${__dirname}/views/index.html`);
 });
 
-// endpoint to get all the activities in the database
 app.get("/activities", (request, response) => {
   db.all("SELECT * from Activity", (err, rows) => {
     if (rows) {
@@ -54,6 +52,7 @@ app.get("/activities", (request, response) => {
       );
     } else if (err) {
       console.log(err);
+      response.status(500);
       response.send("error");
     } else {
       response.send("[]");
@@ -61,7 +60,6 @@ app.get("/activities", (request, response) => {
   });
 });
 
-// endpoint to add a eating to the database
 app.post("/activities", (request, response) => {
   console.log(
     `add to activities ${request.body.type}, ${request.body.from},${request.body.to}`
@@ -81,6 +79,32 @@ app.post("/activities", (request, response) => {
       error => {
         if (error) {
           console.log(error);
+          response.status(500);
+          response.send({ message: "error!" });
+        } else {
+          response.send({ id: });
+        }
+      }
+    );
+  }
+});
+
+app.delete('/activities', (request, response) => {
+    console.log(
+    `delete activity ${request.body.id}`
+  );
+
+  // DISALLOW_WRITE is an ENV variable that gets reset for new projects
+  // so they can write to the database
+  if (!process.env.DISALLOW_WRITE) {
+    const cleansedId = cleanseString(request.body.id);
+    db.run(
+      `DELETE FROM Activity WHERE id=?`,
+      cleansedId,
+      error => {
+        if (error) {
+          console.log(error);
+          response.status(500);
           response.send({ message: "error!" });
         } else {
           response.send({ message: "success" });
