@@ -9,11 +9,16 @@ const dreamInput = dreamsForm.elements["dream"];
 const dreamsList = document.getElementById("dreams");
 const clearButton = document.querySelector('#clear-dreams');
 
-let utcNow = new Date(); 
-isoDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
-let now = new Date().toISOString();
-now = now.substr(0,now.length-8);
+function toLocalTimeString(date) {
+  let dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+  dateString = dateString.substr(0,nowString.length-8);
+  return dateString;
+}
 
+let now = toLocalTimeString(new Date()); 
+
+document.querySelector("#sleepFrom").value = now;
+document.querySelector("#sleepTo").value = now;
 document.querySelector("#eat").value = now;
 
 // request the dreams from our app's sqlite database
