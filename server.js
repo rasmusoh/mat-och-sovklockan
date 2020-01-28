@@ -25,22 +25,14 @@ const db = new sqlite3.Database(dbFile);
 db.serialize(() => {
   if (!exists) {
     db.run(
-      "CREATE TABLE Ate (id INTEGER PRIMARY KEY AUTOINCREMENT, time DATETIME)"
+      "CREATE TABLE Activity (id INTEGER PRIMARY KEY AUTOINCREMENT, type varchar(64),fromTime DATETIME,toTime DATETIME)"
     );
-    db.run(
-      "CREATE TABLE Slept (id INTEGER PRIMARY KEY AUTOINCREMENT, fromTime DATETIME,toTime DATETIME)"
-    );
-    console.log("New tables Ate and Slept created!");
+    console.log("New table Activity created!");
   } else {
     console.log("Database ready to go!");
     db.each("SELECT * from Ate", (err, row) => {
       if (row) {
-        console.log(`Ate record: ${row.time}`);
-      }
-    });
-    db.each("SELECT * from Slept", (err, row) => {
-      if (row) {
-        console.log(`Slept record: ${row.from}, ${row.to}`);
+        console.log(`record: ${row.type}, ${row.fromTime}, ${row.toTime}`);
       }
     });
   }
@@ -51,52 +43,32 @@ app.get("/", (request, response) => {
   response.sendFile(`${__dirname}/views/index.html`);
 });
 
-// endpoint to get all the ate in the database
-app.get("/eats", (request, response) => {
-  db.all("SELECT * from Ate", (err, rows) => {
-    response.send(JSON.stringify(rows));
-  });
-});
-
-// endpoint to get all the ate in the database
-app.get("/sleeps", (request, response) => {
-  db.all("SELECT * from Slept", (err, rows) => {
+// endpoint to get all the activities in the database
+app.get("/activities", (request, response) => {
+  db.all("SELECT * from Activities", (err, rows) => {
     response.send(
-      JSON.stringify(rows.map(x => ({ from: x.fromTime, to: x.toTime })))
+      JSON.stringify(
+        rows.map(x => ({ type: x.type, from: x.fromTime, to: x.toTime }))
+      )
     );
   });
 });
 
 // endpoint to add a eating to the database
-app.post("/eats", (request, response) => {
-  console.log(`add to ate ${request.body.time}`);
+app.post("/activities", (request, response) => {
+  console.log(
+    `add to activities ${request.body.type}, ${request.body.fromTime},${request.body.toTime}`
+  );
 
   // DISALLOW_WRITE is an ENV variable that gets reset for new projects
   // so they can write to the database
   if (!process.env.DISALLOW_WRITE) {
-    const cleansedAte = cleanseString(request.body.time);
-    db.run(`INSERT INTO Ate (time) VALUES (?)`, cleansedAte, error => {
-      if (error) {
-        response.send({ message: "error!" });
-      } else {
-        response.send({ message: "success" });
-      }
-    });
-  }
-});
-
-// endpoint to add a eating to the database
-app.post("/sleeps", (request, response) => {
-  console.log(`add to slept ${request.body.from} ${request.body.to}`);
-
-  // DISALLOW_WRITE is an ENV variable that gets reset for new projects
-  // so they can write to the database
-  if (!process.env.DISALLOW_WRITE) {
+    const cleansedType = cleanseString(request.body.type);
     const cleansedFrom = cleanseString(request.body.from);
     const cleansedTo = cleanseString(request.body.to);
-
     db.run(
-      `INSERT INTO Slept (fromTime, toTime) VALUES (?)`,
+      `INSERT INTO Activity (type, fromTime, toTime) VALUES (?)`,
+      cleansedType,
       cleansedFrom,
       cleansedTo,
       error => {

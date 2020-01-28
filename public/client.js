@@ -23,11 +23,11 @@ eatInput.value = now;
 sleepToInput.value = now;
 sleepFromInput.value = now;
 
-fetch("/eats", {})
+fetch("/activities", {})
   .then(res => res.json())
   .then(response => {
     response.forEach(row => {
-      appendNewAte(row.time)
+      appendNewActivity(row)
     });
   });
 fetch("/sleeps", {})
@@ -39,6 +39,7 @@ fetch("/sleeps", {})
   });
 
 const appendNewActivity = activity => {
+  if (activity.type === 'ate')
   const newListItem = document.createElement("li");
   newListItem.innerText = activity;
   activityList.appendChild(newListItem);
