@@ -28,7 +28,7 @@ db.serialize(() => {
       "CREATE TABLE Ate (id INTEGER PRIMARY KEY AUTOINCREMENT, time DATETIME)"
     );
         db.run(
-      "CREATE TABLE Slept (id INTEGER PRIMARY KEY AUTOINCREMENT, from DATETIME,to DATETIME)"
+      "CREATE TABLE Slept (id INTEGER PRIMARY KEY AUTOINCREMENT, fromTime DATETIME,toTime DATETIME)"
     );
     console.log("New tables Ate and Slept created!");
 
@@ -94,7 +94,7 @@ app.post("/sleeps", (request, response) => {
     const cleansedFrom = cleanseString(request.body.from);    
     const cleansedTo = cleanseString(request.body.to);
 
-    db.run(`INSERT INTO Slept (from, to) VALUES (?)`, cleansedFrom, cleansedTo, error => {
+    db.run(`INSERT INTO Slept (fromTime, toTime) VALUES (?)`, cleansedFrom, cleansedTo, error => {
       if (error) {
         response.send({ message: "error!" });
       } else {
@@ -104,30 +104,6 @@ app.post("/sleeps", (request, response) => {
   }
 });
 
-// endpoint to clear dreams from the database
-app.get("/clearDreams", (request, response) => {
-  // DISALLOW_WRITE is an ENV variable that gets reset for new projects so you can write to the database
-  if (!process.env.DISALLOW_WRITE) {
-    db.each(
-      "SELECT * from Dreams",
-      (err, row) => {
-        console.log("row", row);
-        db.run(`DELETE FROM Dreams WHERE ID=?`, row.id, error => {
-          if (row) {
-            console.log(`deleted row ${row.id}`);
-          }
-        });
-      },
-      err => {
-        if (err) {
-          response.send({ message: "error!" });
-        } else {
-          response.send({ message: "success" });
-        }
-      }
-    );
-  }
-});
 
 // helper function that prevents html/css/script malice
 const cleanseString = function(string) {
