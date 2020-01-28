@@ -29,17 +29,24 @@ fetch("/activities", {})
 const appendNewActivity = activity => {
   
   const newListItem = document.createElement("li");
+  const text = document.createElement('span');
   if (activity.type === 'ate') {
-      newListItem.innerText= `Hon åt ${activity.from}`;
+      text.innerText= `Hon åt ${activity.from}`;
   } else {
-   newListItem.innerText= `Hon sov från ${activity.from} till ${activity.to}`;
+   text.innerText= 
+     `Hon sov från ${activity.from} till ${activity.to}`;
   }
+  const deleteButton = document.createElement('button');
+  deleteButton.innerText = 'X';
+  deleteButton.onclick = () => deleteActivity(activity);
+  newListItem.appendChild(text);
+  newListItem.appendChild(deleteButton);
   newListItem.id = 'activity-'+activity.id;
   activityList.appendChild(newListItem);
 };
 
 const removeActivity = activity=> {
-  docu
+  const listItem = document.getElementById('activity-'+activity.id);
 }
 
 eatForm.onsubmit = event => {
@@ -72,10 +79,10 @@ function sendActivity(activity) {
   })
     .then(res => res.json())
     .then(response => {
-      console.log(JSON.stringify(response));
+      console.log(JSON.stringify(response))
       activity.id = response.id;
+      appendNewActivity(activity);
     });
-  appendNewActivity(activity);
 }
 
 function deleteActivity(activity) {
@@ -87,6 +94,6 @@ function deleteActivity(activity) {
     .then(res => res.json())
     .then(response => {
       console.log(JSON.stringify(response));
+      removeActivity(activity);
     });
-  removeActivity(activity);
 }

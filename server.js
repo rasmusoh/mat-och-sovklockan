@@ -47,7 +47,7 @@ app.get("/activities", (request, response) => {
     if (rows) {
       response.send(
         JSON.stringify(
-          rows.map(x => ({ type: x.type, from: x.fromTime, to: x.toTime }))
+          rows.map(x => ({ id:x.id , type: x.type, from: x.fromTime, to: x.toTime }))
         )
       );
     } else if (err) {
