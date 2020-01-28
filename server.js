@@ -27,19 +27,18 @@ db.serialize(() => {
     db.run(
       "CREATE TABLE Ate (id INTEGER PRIMARY KEY AUTOINCREMENT, time DATETIME)"
     );
-        db.run(
+    db.run(
       "CREATE TABLE Slept (id INTEGER PRIMARY KEY AUTOINCREMENT, fromTime DATETIME,toTime DATETIME)"
     );
     console.log("New tables Ate and Slept created!");
-
   } else {
-    console.log('Database ready to go!');
+    console.log("Database ready to go!");
     db.each("SELECT * from Ate", (err, row) => {
       if (row) {
         console.log(`Ate record: ${row.time}`);
       }
     });
-      db.each("SELECT * from Slept", (err, row) => {
+    db.each("SELECT * from Slept", (err, row) => {
       if (row) {
         console.log(`Slept record: ${row.from}, ${row.to}`);
       }
@@ -62,7 +61,9 @@ app.get("/eats", (request, response) => {
 // endpoint to get all the ate in the database
 app.get("/sleeps", (request, response) => {
   db.all("SELECT * from Slept", (err, rows) => {
-    response.send(JSON.stringify(rows));
+    response.send(
+      JSON.stringify(rows.map(x => ({ from: x.fromTime, to: x.toTime })))
+    );
   });
 });
 
@@ -91,19 +92,23 @@ app.post("/sleeps", (request, response) => {
   // DISALLOW_WRITE is an ENV variable that gets reset for new projects
   // so they can write to the database
   if (!process.env.DISALLOW_WRITE) {
-    const cleansedFrom = cleanseString(request.body.from);    
+    const cleansedFrom = cleanseString(request.body.from);
     const cleansedTo = cleanseString(request.body.to);
 
-    db.run(`INSERT INTO Slept (fromTime, toTime) VALUES (?)`, cleansedFrom, cleansedTo, error => {
-      if (error) {
-        response.send({ message: "error!" });
-      } else {
-        response.send({ message: "success" });
+    db.run(
+      `INSERT INTO Slept (fromTime, toTime) VALUES (?)`,
+      cleansedFrom,
+      cleansedTo,
+      error => {
+        if (error) {
+          response.send({ message: "error!" });
+        } else {
+          response.send({ message: "success" });
+        }
       }
-    });
+    );
   }
 });
-
 
 // helper function that prevents html/css/script malice
 const cleanseString = function(string) {

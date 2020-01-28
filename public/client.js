@@ -27,7 +27,14 @@ fetch("/eats", {})
   .then(res => res.json())
   .then(response => {
     response.forEach(row => {
-      appendNewActivity(row.time);
+      appendNewAte(row.time)
+    });
+  });
+fetch("/sleeps", {})
+  .then(res => res.json())
+  .then(response => {
+    response.forEach(row => {
+      appendNewSlept(row.from, row.to)
     });
   });
 
@@ -37,10 +44,14 @@ const appendNewActivity = activity => {
   activityList.appendChild(newListItem);
 };
 
+const appendNewAte = time => appendNewActivity(`Hon åt ${time}`);
+const appendNewSlept = (from,to) => appendNewActivity(`Hon sov från ${from} till ${to}`);
+
+
 eatForm.onsubmit = event => {
   event.preventDefault();
 
-  const data = { time: eatInput.valueAsDate };
+  const data = { time: eatInput.value };
 
   fetch("/eats", {
     method: "POST",
@@ -51,10 +62,32 @@ eatForm.onsubmit = event => {
     .then(response => {
       console.log(JSON.stringify(response));
     });
-  appendNewActivity(eatInput.value);
+  appendNewAte(data.time);
 
   // reset form
   eatInput.value = toLocalTimeString(new Date());
   eatInput.focus();
+};
+
+sleepForm.onsubmit = event => {
+  event.preventDefault();
+
+  const data = { from: sleepFromInput.value, to: sleepToInput.value };
+
+  fetch("/sleeps", {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: { "Content-Type": "application/json" }
+  })
+    .then(res => res.json())
+    .then(response => {
+      console.log(JSON.stringify(response));
+    });
+  appendNewSlept(data.from, data.to);
+
+  // reset form
+  sleepFromInput.value = toLocalTimeString(new Date());
+  sleepToInput.value = toLocalTimeString(new Date());
+  sleepFromInput.focus();
 };
 
