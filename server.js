@@ -27,6 +27,9 @@ db.serialize(() => {
     db.run(
       "CREATE TABLE Activity (id INTEGER PRIMARY KEY AUTOINCREMENT, type varchar(64),fromTime DATETIME,toTime DATETIME)"
     );
+    db.run(
+      "CREATE TABLE Activity (id INTEGER PRIMARY KEY AUTOINCREMENT, type varchar(64),fromTime DATETIME,toTime DATETIME)"
+    );
     console.log("New table Activity created!");
   } else {
     console.log("Database ready to go!");
