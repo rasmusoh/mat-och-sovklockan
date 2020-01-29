@@ -4,6 +4,8 @@
 // init project
 const express = require("express");
 const bodyParser = require("body-parser");
+const short = require('short-uuid');
+console.log(short.generate());
 const app = express();
 const fs = require("fs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -25,15 +27,12 @@ const db = new sqlite3.Database(dbFile);
 db.serialize(() => {
   if (!exists) {
     db.run(
-      "CREATE TABLE User (id INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(64), uri varchar(64)"
+      "CREATE TABLE Log (id INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(64), uri varchar(64)"
     );
     db.run(
-      "ALTER TABLE Activity ADD COLUMN()"
+      "CREATE TABLE Activity (id INTEGER PRIMARY KEY AUTOINCREMENT, type varchar(64),fromTime DATETIME,toTime DATETIME, logId INTEGER, FOREIGN KEY (logId) REFERENCES Log(id))"
     );
-    db.run(
-      "CREATE TABLE Activity (id INTEGER PRIMARY KEY AUTOINCREMENT, type varchar(64),fromTime DATETIME,toTime DATETIME)"
-    );
-    console.log("New table Activity created!");
+    console.log("New tables Activity, Log created!");
   } else {
     console.log("Database ready to go!");
     db.each("SELECT * from Activity", (err, row) => {
