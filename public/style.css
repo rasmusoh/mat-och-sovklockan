@@ -32,6 +32,7 @@ form {
   border-radius: 3px;
 }
 
+
 form.eat {
   background-color:pink;
 }
@@ -77,11 +78,12 @@ button:active {
 }
 
 li {
+  list-style-type: none;
   margin-bottom: 5px;
 }
 
-li  {
-  mar-left: 5px
+li > span  {
+  margin-right: 10px
 }
 
 footer {
