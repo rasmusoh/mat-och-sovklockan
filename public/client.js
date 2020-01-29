@@ -6,6 +6,24 @@ const sleepToInput = sleepForm.elements["sleepTo"];
 const eatList = document.querySelector("#eatList");
 const sleepList = document.querySelector("#sleepList");
 
+function groupByDay(activities) {
+	if (activities.length = 0) return [];
+	activities = activities.sort((a,b) => a.from > b.from); 
+	var day = [activities[0]];
+	var days = [day];
+	for (var i =1; i< activities.length; i++) {
+    	var next = activities[i];
+		var last = activities[i-1];
+		if (next.from.getDate() !== last.from.getDate()
+			|| next.from.getDate() !== next.to.getDate()) {
+        		day = [];
+				days.push(day);
+		}
+		day.push(next);
+    }
+    return days;
+}
+
 function toLocalTimeString(date) {
   let dateString = new Date(
     date.getTime() - date.getTimezoneOffset() * 60000
