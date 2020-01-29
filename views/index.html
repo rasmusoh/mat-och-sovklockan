@@ -5,15 +5,20 @@
 <html lang="en">
   <head>
     <title>Welcome to Glitch!</title>
-    <meta name="description" content="A cool thing made with Glitch">
-    <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A cool thing made with Glitch" />
+    <link
+      id="favicon"
+      rel="icon"
+      href="https://glitch.com/edit/favicon-app.ico"
+      type="image/x-icon"
+    />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- import the webpage's stylesheet -->
-    <link rel="stylesheet" href="/style.css">
-    
+    <link rel="stylesheet" href="/style.css" />
+
     <!-- import the webpage's client-side javascript file -->
     <script src="/client.js" defer></script>
   </head>
@@ -26,37 +31,44 @@
 
     <main>
       <p class="bold">Hallå,</p>
-      
+
       <p>Skicka in när hon åt och sov:</p>
-      
+
       <form class="eat">
         <label for="eat">Åt när</label>
-        <input id="eat" name="eat"  aria-label="ate at" type="datetime-local">
+        <input id="eat" name="eat" aria-label="ate at" type="datetime-local" />
         <button type="submit" id="submit-eat">Skicka</button>
       </form>
-      
+
       <form class="sleep">
-        <label for="sleepFrom">Från</label>
-        <input id="sleepFrom" name="sleepFrom" aria-label="sleep from" type="datetime-local">
-        <label for="sleepTo">Till</label>
-        <input id="sleepTo" name="sleepTo" aria-label="sleep to" type="datetime-local">
+        <label for="sleepFrom">Sov från</label>
+        <input
+          id="sleepFrom"
+          name="sleepFrom"
+          aria-label="sleep from"
+          type="datetime-local"
+        />
+        <label for="sleepTo">Sov till</label>
+        <input
+          id="sleepTo"
+          name="sleepTo"
+          aria-label="sleep to"
+          type="datetime-local"
+        />
         <button type="submit" id="submit-sleep">Skicka</button>
       </form>
-      
-      <ol id="activity">
-        
-      </ol>
-      
+
+      <h4>Ätit:</h4>
+      <ol id="eatList"></ol>
+      <h4>Sovit:</h4>
+      <ol id="sleepList"></ol>
     </main>
 
-    <footer>
-      Made with <a href="https://glitch.com">Glitch</a>!
-    </footer>
+    <footer>Made with <a href="https://glitch.com">Glitch</a>!</footer>
 
     <!-- include the Glitch button to show what the webpage is about and
           to make it easier for folks to view source and remix -->
     <div class="glitchButton" style="position:fixed;top:20px;right:20px;"></div>
     <script src="https://button.glitch.me/button.js"></script>
-
   </body>
 </html>

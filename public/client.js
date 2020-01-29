@@ -3,8 +3,8 @@ const eatInput = eatForm.elements["eat"];
 const sleepForm = document.forms[1];
 const sleepFromInput = sleepForm.elements["sleepFrom"];
 const sleepToInput = sleepForm.elements["sleepTo"];
-const eatList = document.querySelector("#eat");
-const sleepList = document.querySelector("#sleep");
+const eatList = document.querySelector("#eatList");
+const sleepList = document.querySelector("#sleepList");
 
 function toLocalTimeString(date) {
   let dateString = new Date(
@@ -38,10 +38,10 @@ const appendNewActivity = activity => {
   newListItem.appendChild(deleteButton);
   newListItem.id = "activity-" + activity.id;
   if (activity.type === "ate") {
-    text.innerText = `Hon åt ${activity.from}`;
+    text.innerText = `${formatDate(activity.from)}`;
     eatList.appendChild(newListItem);
   } else {
-    text.innerText = `Hon sov från ${activity.from} till ${activity.to}`;
+    text.innerText = `Från ${formatDate(activity.from)} till ${formatDate(activity.to)}`;
     sleepList.appendChild(newListItem);
   }
 
@@ -49,8 +49,10 @@ const appendNewActivity = activity => {
 };
 
 const removeActivity = activity => {
-  const listItem = document.getElementById("activity-" + activity.id);
-  listItem.parentNode.removeChild(listItem);
+  if (confirm("vill du ta bort den här raden?")) {
+      const listItem = document.getElementById("activity-" + activity.id);
+      listItem.parentNode.removeChild(listItem);
+  }
 };
 
 eatForm.onsubmit = event => {
@@ -104,4 +106,8 @@ function deleteActivity(activity) {
       console.log(JSON.stringify(response));
       removeActivity(activity);
     });
+}
+
+function formatDate(date) {
+  return date.substr(5).replace('T', ' kl. ')
 }
