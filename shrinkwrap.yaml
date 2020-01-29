@@ -1,5 +1,6 @@
 dependencies:
   express: 4.17.1
+  short-uuid: 3.1.1
   sqlite3: 4.1.1
 packages:
   /abbrev/1.1.1:
@@ -36,6 +37,10 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha1-7QMXwyIGT3lGbAKWa922Bas32Zg=
+  /any-base/1.1.0:
+    dev: false
+    resolution:
+      integrity: sha512-uMgjozySS8adZZYePpaWs8cxB9/kdzmpX6SgJZ+wbz1K5eYk5QMYDVJaZKhxyIHUdnnJkfR7SVgStgH7LkGUyg==
   /aproba/1.2.0:
     dev: false
     resolution:
@@ -935,6 +940,13 @@ packages:
     dev: false
     resolution:
       integrity: sha512-JvdAWfbXeIGaZ9cILp38HntZSFSo3mWg6xGcJJsd+d4aRMOqauag1C63dJfDw7OaMYwEbHMOxEZ1lqVRYP2OAw==
+  /short-uuid/3.1.1:
+    dependencies:
+      any-base: 1.1.0
+      uuid: 3.4.0
+    dev: false
+    resolution:
+      integrity: sha512-7dI69xtJYpTIbg44R6JSgrbDtZFuZ9vAwwmnF/L0PinykbFrhQ7V8omKsQcVw1TP0nYJ7uQp1PN6/aVMkzQFGQ==
   /signal-exit/3.0.2:
     dev: false
     resolution:
@@ -1128,4 +1140,5 @@ shrinkwrapMinorVersion: 9
 shrinkwrapVersion: 3
 specifiers:
   express: ^4.17.1
+  short-uuid: ^3.1.1
   sqlite3: ^4.1.1

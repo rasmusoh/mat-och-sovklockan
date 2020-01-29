@@ -25,7 +25,10 @@ const db = new sqlite3.Database(dbFile);
 db.serialize(() => {
   if (!exists) {
     db.run(
-      "CREATE TABLE Activity (id INTEGER PRIMARY KEY AUTOINCREMENT, type varchar(64),fromTime DATETIME,toTime DATETIME)"
+      "CREATE TABLE User (id INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(64), uri varchar(64)"
+    );
+    db.run(
+      "ALTER TABLE Activity ADD COLUMN()"
     );
     db.run(
       "CREATE TABLE Activity (id INTEGER PRIMARY KEY AUTOINCREMENT, type varchar(64),fromTime DATETIME,toTime DATETIME)"
