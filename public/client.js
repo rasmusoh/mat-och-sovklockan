@@ -3,7 +3,8 @@ const eatInput = eatForm.elements["eat"];
 const sleepForm = document.forms[1];
 const sleepFromInput = sleepForm.elements["sleepFrom"];
 const sleepToInput = sleepForm.elements["sleepTo"];
-const activityList = document.querySelector("#activity");
+const eatList = document.querySelector("#eat");
+const sleepList = document.querySelector("#sleep");
 
 function toLocalTimeString(date) {
   let dateString = new Date(
@@ -30,18 +31,21 @@ fetch("/activities", {})
 const appendNewActivity = activity => {
   const newListItem = document.createElement("li");
   const text = document.createElement("span");
-  if (activity.type === "ate") {
-    text.innerText = `Hon åt ${activity.from}`;
-  } else {
-    text.innerText = `Hon sov från ${activity.from} till ${activity.to}`;
-  }
   const deleteButton = document.createElement("button");
   deleteButton.innerText = "X";
   deleteButton.onclick = () => deleteActivity(activity);
   newListItem.appendChild(text);
   newListItem.appendChild(deleteButton);
   newListItem.id = "activity-" + activity.id;
-  activityList.appendChild(newListItem);
+  if (activity.type === "ate") {
+    text.innerText = `Hon åt ${activity.from}`;
+    eatList.appendChild(newListItem);
+  } else {
+    text.innerText = `Hon sov från ${activity.from} till ${activity.to}`;
+    sleepList.appendChild(newListItem);
+  }
+
+
 };
 
 const removeActivity = activity => {
