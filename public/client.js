@@ -1,4 +1,4 @@
-const activities = [];
+let activities = [];
 
 const eatForm = document.forms[0];
 const eatInput = eatForm.elements["eat"];
