@@ -5,17 +5,38 @@ const sleepFromInput = sleepForm.elements["sleepFrom"];
 const sleepToInput = sleepForm.elements["sleepTo"];
 const eatList = document.querySelector("#eatList");
 const sleepList = document.querySelector("#sleepList");
-
+var activity1 = {
+    from:new Date('2020-01-20T22:00'),
+    to:new Date('2020-01-20T23:00'),
+}
+var activity2 = {
+    from:new Date('2020-01-20T23:30'),
+    to:new Date('2020-01-21T10:20'),
+}
+var activity3 = {
+    from:new Date('2020-01-20T23:45'),
+    to:new Date('2020-01-20T23:45'),
+}
+var activity4 = {
+    from:new Date('2020-01-21T03:45'),
+    to:new Date('2020-01-21T03:45'),
+}
+var activity5 = {
+    from:new Date('2020-01-21T13:45'),
+    to:new Date('2020-01-21T13:55'),
+}
+var activities = [activity1,activity2,activity3,activity4,activity5];
+console.log(groupByDay(activities));
 function groupByDay(activities) {
-	if (activities.length = 0) return [];
+	if (activities.length === 0) return [];
 	activities = activities.sort((a,b) => a.from > b.from); 
 	var day = [activities[0]];
 	var days = [day];
+  var date = day.getDate();
 	for (var i =1; i< activities.length; i++) {
     	var next = activities[i];
 		var last = activities[i-1];
-		if (next.from.getDate() !== last.from.getDate()
-			|| next.from.getDate() !== next.to.getDate()) {
+		if (next.to.getDate() !== date) {
         		day = [];
 				days.push(day);
 		}
