@@ -121,7 +121,7 @@ const removeActivity = activity => {
 eatForm.onsubmit = event => {
   event.preventDefault();
 
-  const data = { type: "ate", from: eatInput.value, to: eatInput.value };
+  const data = { type: "ate", from: new Date(eatInput.value), to: new Date(eatInput.value) };
   sendActivity(data);
 
   eatInput.value = toLocalTimeString(new Date());
@@ -133,8 +133,8 @@ sleepForm.onsubmit = event => {
 
   const data = {
     type: "slept",
-    from: sleepFromInput.value,
-    to: sleepToInput.value
+    from: new Date(sleepFromInput.value),
+    to: new Date(sleepToInput.value)
   };
 
   sendActivity(data);
@@ -154,6 +154,9 @@ function sendActivity(activity) {
     .then(response => {
       console.log(JSON.stringify(response));
       activity.id = response.id;
+      activity.from = new Date(activity.from);
+      activity.to = new Date(activity.to);
+    
       activities.push(activity);
       renderActivities();
     });
