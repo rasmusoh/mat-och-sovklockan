@@ -85,11 +85,13 @@ function renderTodayLists() {
 }
 
 function renderStatistics() {
+    statisticsPerDay.innerHTML = "";
     var byDay = groupByDay(activities);
   for (const day of byDay) {
         const newListItem = document.createElement("li");
-        newListItem.innerText = day[0].from;
-        statisticsPerDay.appendChild(byDay)
+        const sleptTotal = day.filter(x => x.type === 'slept').reduce((cur,next) => cur+getDuration(next),0)
+        newListItem.innerText = formatDate(day[0].from).substr(0,5) +' sov hon:'+sleptTotal;
+        statisticsPerDay.appendChild(newListItem);
   }
 }
 
@@ -153,6 +155,10 @@ function deleteActivity(activity) {
         renderActivities();
       });
   }
+}
+
+function getDuration(activity) {
+   return (activity.to - activity.from) / 36e5;
 }
 
 function formatDate(date) {
