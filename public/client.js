@@ -12,7 +12,15 @@ const statisticsPerDay = document.querySelector('#statisticsPerDay');
 /// groups activities per day, from
 function groupByDay(activities) {
   if (activities.length === 0) return [];
-  activities = activities.sort((a, b) => a.from > b.from);
+  activities = activities
+    .map(x => x.from.getDate() !== x.to.getDate()
+         ? [{type:x.type, from:x.from, to:toEndOfDay(x.from)},
+            {type:x.type, from:x.from, to:x.to}
+           ]
+         : x
+        )
+    .flat()
+    .sort((a, b) => a.from > b.from);
   let day = [activities[0]],
     days = [day],
     date = activities[0].to.getDate();
@@ -155,6 +163,15 @@ function deleteActivity(activity) {
         renderActivities();
       });
   }
+}
+
+function startOfDay(date) {
+  return new Date(`${date.toISOString().substr(0,10)}T00:00:00`);
+}
+
+
+function toEndOfDay(date) {
+  return new Date(`${date.toISOString().substr(0,10)}T23:59:59`);
 }
 
 function getDuration(activity) {
