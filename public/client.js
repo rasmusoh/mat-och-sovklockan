@@ -5,8 +5,10 @@ const eatInput = eatForm.elements["eat"];
 const sleepForm = document.forms[1];
 const sleepFromInput = sleepForm.elements["sleepFrom"];
 const sleepToInput = sleepForm.elements["sleepTo"];
-const eatList = document.querySelector("#eatList");
-const sleepList = document.querySelector("#sleepList");
+const eatHistory = document.querySelector("#eatHistory");
+const sleepLHistory = document.querySelector("#sleepHistory");
+const eatToday = document.querySelector("#eatToday");
+const sleepToday = document.querySelector("#sleepToday");
 const statisticsPerDay = document.querySelector('#statisticsPerDay');
 
 function groupByDay(activities) {
@@ -19,10 +21,10 @@ function groupByDay(activities) {
          : x
         )
     .flat()
-    .sort((a, b) => a.from > b.from);
+    .sort((a, b) => a.from - b.from);
   let day = [activities[0]],
     days = [day],
-    date = activities[0].to.getDate();
+    date = activities[0].from.getDate();
   for (var i = 1; i < activities.length; i++) {
     var next = activities[i];
     var last = activities[i - 1];
@@ -97,7 +99,7 @@ function renderStatistics() {
   for (const day of byDay) {
         const newListItem = document.createElement("li");
         const sleptTotal = day.filter(x => x.type === 'slept').reduce((cur,next) => cur+getDuration(next),0)
-        newListItem.innerText = formatDate(day[0].from).substr(0,5) +' sov hon:'+sleptTotal;
+        newListItem.innerText = formatDate(day[0].from).substr(0,5) +' sov hon '+Math.round(sleptTotal*10)/10+' timmar.';
         statisticsPerDay.appendChild(newListItem);
   }
 }
