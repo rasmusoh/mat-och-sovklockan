@@ -33,19 +33,11 @@ form {
 }
 
 
-form.eat {
+form.eat, #eatToday, #eatHistory {
   background-color:pink;
 }
 
-form.sleep {
-  background-color:cyan;
-}
-
-#eatList {
-  background-color:pink;
-}
-
-#sleepList {
+form.sleep, #sleepToday, #sleepHistory {
   background-color:cyan;
 }
 

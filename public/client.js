@@ -6,10 +6,9 @@ const sleepForm = document.forms[1];
 const sleepFromInput = sleepForm.elements["sleepFrom"];
 const sleepToInput = sleepForm.elements["sleepTo"];
 const eatHistory = document.querySelector("#eatHistory");
-const sleepLHistory = document.querySelector("#sleepHistory");
+const sleepHistory = document.querySelector("#sleepHistory");
 const eatToday = document.querySelector("#eatToday");
 const sleepToday = document.querySelector("#sleepToday");
-const statisticsPerDay = document.querySelector('#statisticsPerDay');
 
 function groupByDay(activities) {
   if (activities.length === 0) return [];
@@ -70,8 +69,10 @@ function renderActivities() {
 }
 
 function renderTodayLists() {
-  sleepList.innerHTML = "";
-  eatList.innerHTML = "";
+  sleepToday.innerHTML = "";
+  eatToday.innerHTML = "";
+  var today= new Date();
+  var activitiesFromToday = activities.filter(x => x.today == )
   for (const activity of activities) {
     const newListItem = document.createElement("li");
     const text = document.createElement("span");
@@ -83,24 +84,25 @@ function renderTodayLists() {
     newListItem.id = "activity-" + activity.id;
     if (activity.type === "ate") {
       text.innerText = `${formatDate(activity.from)}`;
-      eatList.appendChild(newListItem);
+      eatToday.appendChild(newListItem);
     } else {
       text.innerText = `Från ${formatDate(activity.from)} till ${formatDate(
         activity.to
       )}`;
-      sleepList.appendChild(newListItem);
+      sleepToday.appendChild(newListItem);
     }
   }
 }
 
 function renderStatistics() {
-    statisticsPerDay.innerHTML = "";
-    var byDay = groupByDay(activities);
+  sleepHistory.innerHTML = "";
+  var byDay = groupByDay(activities);
+  byDay.pop();
   for (const day of byDay) {
         const newListItem = document.createElement("li");
         const sleptTotal = day.filter(x => x.type === 'slept').reduce((cur,next) => cur+getDuration(next),0)
         newListItem.innerText = formatDate(day[0].from).substr(0,5) +' sov hon '+Math.round(sleptTotal*10)/10+' timmar.';
-        statisticsPerDay.appendChild(newListItem);
+        sleepHistory.appendChild(newListItem);
   }
 }
 
@@ -164,6 +166,12 @@ function deleteActivity(activity) {
         renderActivities();
       });
   }
+}
+
+function sameDate(date1,date2) {
+  return date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date1.getDate();
 }
 
 function startOfDay(date) {
