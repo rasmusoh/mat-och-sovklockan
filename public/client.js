@@ -9,13 +9,12 @@ const eatList = document.querySelector("#eatList");
 const sleepList = document.querySelector("#sleepList");
 const statisticsPerDay = document.querySelector('#statisticsPerDay');
 
-/// groups activities per day, from
 function groupByDay(activities) {
   if (activities.length === 0) return [];
   activities = activities
     .map(x => x.from.getDate() !== x.to.getDate()
          ? [{type:x.type, from:x.from, to:toEndOfDay(x.from)},
-            {type:x.type, from:x.from, to:x.to}
+            {type:x.type, from:startOfDay(x.to), to:x.to}
            ]
          : x
         )
@@ -27,12 +26,12 @@ function groupByDay(activities) {
   for (var i = 1; i < activities.length; i++) {
     var next = activities[i];
     var last = activities[i - 1];
-    day.push(next);
     if (next.to.getDate() > date) {
       date = next.to.getDate();
       day = [];
       days.push(day);
     }
+    day.push(next);
   }
   return days;
 }
