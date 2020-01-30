@@ -8,23 +8,24 @@ const sleepToInput = sleepForm.elements["sleepTo"];
 const eatList = document.querySelector("#eatList");
 const sleepList = document.querySelector("#sleepList");
 
+/// groups activities per day, from
 function groupByDay(activities) {
-	if (activities.length === 0) return [];
-	activities = activities.sort((a,b) => a.from > b.from); 
-	let day = [activities[0]],
-	  days = [day],
+  if (activities.length === 0) return [];
+  activities = activities.sort((a, b) => a.from > b.from);
+  let day = [activities[0]],
+    days = [day],
     date = activities[0].to.getDate();
-	for (var i =1; i< activities.length; i++) {
-    	var next = activities[i];
-		var last = activities[i-1];
-		if (next.to.getDate() > date) {
-        date = next.to.getDate();
-        day = [];
-				days.push(day);
-		}
-		day.push(next);
+  for (var i = 1; i < activities.length; i++) {
+    var next = activities[i];
+    var last = activities[i - 1];
+    day.push(next);
+    if (next.to.getDate() > date) {
+      date = next.to.getDate();
+      day = [];
+      days.push(day);
     }
-    return days;
+  }
+  return days;
 }
 
 function toLocalTimeString(date) {
@@ -45,41 +46,41 @@ fetch("/activities", {})
   .then(res => res.json())
   .then(response => {
     activities = response.map(row => ({
-      id:row.id,
-      type:row.type,
-      from:new Date(row.from),
-      to:new Date(row.to),
+      id: row.id,
+      type: row.type,
+      from: new Date(row.from),
+      to: new Date(row.to)
     }));
-    response.forEach(row => {
-      appendNewActivity(row);
-    });
+    renderActivities();
   });
 
-const appendNewActivity = activity => {
-  const newListItem = document.createElement("li");
-  const text = document.createElement("span");
-  const deleteButton = document.createElement("button");
-  deleteButton.innerText = "X";
-  deleteButton.onclick = () => deleteActivity(activity);
-  newListItem.appendChild(text);
-  newListItem.appendChild(deleteButton);
-  newListItem.id = "activity-" + activity.id;
-  if (activity.type === "ate") {
-    text.innerText = `${formatDate(activity.from)}`;
-    eatList.appendChild(newListItem);
-  } else {
-    text.innerText = `Från ${formatDate(activity.from)} till ${formatDate(activity.to)}`;
-    sleepList.appendChild(newListItem);
+function renderActivities() {
+  sleepList.innerHTML = "";
+  eatList.innerHTML = "";
+  for (const activity of activities) {
+    const newListItem = document.createElement("li");
+    const text = document.createElement("span");
+    const deleteButton = document.createElement("button");
+    deleteButton.innerText = "X";
+    deleteButton.onclick = () => deleteActivity(activity);
+    newListItem.appendChild(text);
+    newListItem.appendChild(deleteButton);
+    newListItem.id = "activity-" + activity.id;
+    if (activity.type === "ate") {
+      text.innerText = `${formatDate(activity.from)}`;
+      eatList.appendChild(newListItem);
+    } else {
+      text.innerText = `Från ${formatDate(activity.from)} till ${formatDate(
+        activity.to
+      )}`;
+      sleepList.appendChild(newListItem);
+    }
   }
-
-
-};
+}
 
 const removeActivity = activity => {
-  if (confirm("vill du ta bort den här raden?")) {
-      const listItem = document.getElementById("activity-" + activity.id);
-      listItem.parentNode.removeChild(listItem);
-  }
+  const listItem = document.getElementById("activity-" + activity.id);
+  listItem.parentNode.removeChild(listItem);
 };
 
 eatForm.onsubmit = event => {
@@ -118,23 +119,27 @@ function sendActivity(activity) {
     .then(response => {
       console.log(JSON.stringify(response));
       activity.id = response.id;
-      appendNewActivity(activity);
+      activities.push(activity);
+      renderActivities();
     });
 }
 
 function deleteActivity(activity) {
-  fetch("/activities", {
-    method: "DELETE",
-    body: JSON.stringify(activity),
-    headers: { "Content-Type": "application/json" }
-  })
-    .then(res => res.json())
-    .then(response => {
-      console.log(JSON.stringify(response));
-      removeActivity(activity);
-    });
+  if (confirm("vill du ta bort den här raden?")) {
+    fetch("/activities", {
+      method: "DELETE",
+      body: JSON.stringify(activity),
+      headers: { "Content-Type": "application/json" }
+    })
+      .then(res => res.json())
+      .then(response => {
+        console.log(JSON.stringify(response));
+        activities.splice(activities.indexOf(activity));
+        renderActivities();
+      });
+  }
 }
 
 function formatDate(date) {
-  return date.substr(5).replace('T', ' kl. ')
+  return date.toLocalTimeString().substr(5).replace("T", " kl. ");
 }
