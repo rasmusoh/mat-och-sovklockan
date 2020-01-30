@@ -13,12 +13,14 @@ const sleepToday = document.querySelector("#sleepToday");
 function groupByDay(activities) {
   if (activities.length === 0) return [];
   activities = activities
-    .map(x => x.from.getDate() !== x.to.getDate()
-         ? [{type:x.type, from:x.from, to:toEndOfDay(x.from)},
-            {type:x.type, from:startOfDay(x.to), to:x.to}
-           ]
-         : x
-        )
+    .map(x =>
+      x.from.getDate() !== x.to.getDate()
+        ? [
+            { type: x.type, from: x.from, to: toEndOfDay(x.from) },
+            { type: x.type, from: startOfDay(x.to), to: x.to }
+          ]
+        : x
+    )
     .flat()
     .sort((a, b) => a.from - b.from);
   let day = [activities[0]],
@@ -71,8 +73,10 @@ function renderActivities() {
 function renderTodayLists() {
   sleepToday.innerHTML = "";
   eatToday.innerHTML = "";
-  var today= new Date();
-  var activitiesFromToday = activities.filter(x => sameDate(x.to,today))
+  var today = new Date();
+  var activitiesFromToday = activities
+    .filter(x => sameDate(x.to, today))
+    .sort((a, b) => a.from - b.from);
   for (const activity of activitiesFromToday) {
     const newListItem = document.createElement("li");
     const text = document.createElement("span");
@@ -100,16 +104,26 @@ function renderStatistics() {
   var byDay = groupByDay(activities);
   byDay.pop();
   for (const day of byDay) {
-        const newListItem = document.createElement("li");
-        const sleptTotal = day.filter(x => x.type === 'slept').reduce((cur,next) => cur+getDuration(next),0)
-        newListItem.innerText = formatDate(day[0].from) +' sov hon '+Math.round(sleptTotal*10)/10+' timmar.';
-        sleepHistory.appendChild(newListItem);
+    const newListItem = document.createElement("li");
+    const sleptTotal = day
+      .filter(x => x.type === "slept")
+      .reduce((cur, next) => cur + getDuration(next), 0);
+    newListItem.innerText =
+      formatDate(day[0].from) +
+      " sov hon " +
+      Math.round(sleptTotal * 10) / 10 +
+      " timmar.";
+    sleepHistory.appendChild(newListItem);
   }
   for (const day of byDay) {
-        const newListItem = document.createElement("li");
-        const sleptTotal = day.filter(x => x.type === 'ate').length
-        newListItem.innerText = formatDate(day[0].from)+' åt hon '+Math.round(sleptTotal*10)/10+' gånger.';
-        eatHistory.appendChild(newListItem);
+    const newListItem = document.createElement("li");
+    const sleptTotal = day.filter(x => x.type === "ate").length;
+    newListItem.innerText =
+      formatDate(day[0].from) +
+      " åt hon " +
+      Math.round(sleptTotal * 10) / 10 +
+      " gånger.";
+    eatHistory.appendChild(newListItem);
   }
 }
 
@@ -121,7 +135,11 @@ const removeActivity = activity => {
 eatForm.onsubmit = event => {
   event.preventDefault();
 
-  const data = { type: "ate", from: new Date(eatInput.value), to: new Date(eatInput.value) };
+  const data = {
+    type: "ate",
+    from: new Date(eatInput.value),
+    to: new Date(eatInput.value)
+  };
   sendActivity(data);
 
   eatInput.value = toLocalTimeString(new Date());
@@ -154,9 +172,7 @@ function sendActivity(activity) {
     .then(response => {
       console.log(JSON.stringify(response));
       activity.id = response.id;
-      activity.from = new Date(activity.from);
-      activity.to = new Date(activity.to);
-    
+
       activities.push(activity);
       renderActivities();
     });
@@ -178,29 +194,34 @@ function deleteActivity(activity) {
   }
 }
 
-function sameDate(date1,date2) {
-  return date1.getFullYear() === date2.getFullYear() &&
+function sameDate(date1, date2) {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
     date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate();
+    date1.getDate() === date2.getDate()
+  );
 }
 
 function startOfDay(date) {
-  return new Date(`${date.toISOString().substr(0,10)}T00:00:00`);
+  return new Date(`${date.toISOString().substr(0, 10)}T00:00:00`);
 }
 
-
 function toEndOfDay(date) {
-  return new Date(`${date.toISOString().substr(0,10)}T23:59:59`);
+  return new Date(`${date.toISOString().substr(0, 10)}T23:59:59`);
 }
 
 function getDuration(activity) {
-   return (activity.to - activity.from) / 36e5;
+  return (activity.to - activity.from) / 36e5;
 }
 
 function formatDate(date) {
-  return date.toLocaleDateString('sv-SE', {weekday:'long', day:'numeric',month:'long'})
+  return date.toLocaleDateString("sv-SE", {
+    weekday: "long",
+    day: "numeric",
+    month: "long"
+  });
 }
 
 function formatTime(date) {
-  return 'kl. '+date.toLocaleString('sv-SE').substr(10,6);
+  return "kl. " + date.toLocaleString("sv-SE").substr(10, 6);
 }
