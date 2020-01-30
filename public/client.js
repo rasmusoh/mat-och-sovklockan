@@ -7,6 +7,7 @@ const sleepFromInput = sleepForm.elements["sleepFrom"];
 const sleepToInput = sleepForm.elements["sleepTo"];
 const eatList = document.querySelector("#eatList");
 const sleepList = document.querySelector("#sleepList");
+const statisticsPerDay = document.querySelector('#statisticsPerDay');
 
 /// groups activities per day, from
 function groupByDay(activities) {
@@ -55,6 +56,11 @@ fetch("/activities", {})
   });
 
 function renderActivities() {
+  renderTodayLists();
+  renderStatistics();
+}
+
+function renderTodayLists() {
   sleepList.innerHTML = "";
   eatList.innerHTML = "";
   for (const activity of activities) {
@@ -75,6 +81,15 @@ function renderActivities() {
       )}`;
       sleepList.appendChild(newListItem);
     }
+  }
+}
+
+function renderStatistics() {
+    var byDay = groupByDay(activities);
+  for (const day of byDay) {
+        const newListItem = document.createElement("li");
+        newListItem.innerText = day[0].from;
+        statisticsPerDay.appendChild(byDay)
   }
 }
 
@@ -141,5 +156,5 @@ function deleteActivity(activity) {
 }
 
 function formatDate(date) {
-  return date.toLocalTimeString().substr(5).replace("T", " kl. ");
+  return date.toLocaleString('sv-SE').substr(5).replace(" ", " kl. ");
 }
