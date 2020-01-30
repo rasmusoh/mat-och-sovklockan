@@ -72,8 +72,8 @@ function renderTodayLists() {
   sleepToday.innerHTML = "";
   eatToday.innerHTML = "";
   var today= new Date();
-  var activitiesFromToday = activities.filter(x => x.today == )
-  for (const activity of activities) {
+  var activitiesFromToday = activities.filter(x => sameDate(x.to,today))
+  for (const activity of activitiesFromToday) {
     const newListItem = document.createElement("li");
     const text = document.createElement("span");
     const deleteButton = document.createElement("button");
@@ -83,10 +83,10 @@ function renderTodayLists() {
     newListItem.appendChild(deleteButton);
     newListItem.id = "activity-" + activity.id;
     if (activity.type === "ate") {
-      text.innerText = `${formatDate(activity.from)}`;
+      text.innerText = `${formatTime(activity.from)}`;
       eatToday.appendChild(newListItem);
     } else {
-      text.innerText = `Från ${formatDate(activity.from)} till ${formatDate(
+      text.innerText = `Från ${formatTime(activity.from)} till ${formatTime(
         activity.to
       )}`;
       sleepToday.appendChild(newListItem);
@@ -96,13 +96,20 @@ function renderTodayLists() {
 
 function renderStatistics() {
   sleepHistory.innerHTML = "";
+  eatHistory.innerHTML = "";
   var byDay = groupByDay(activities);
   byDay.pop();
   for (const day of byDay) {
         const newListItem = document.createElement("li");
         const sleptTotal = day.filter(x => x.type === 'slept').reduce((cur,next) => cur+getDuration(next),0)
-        newListItem.innerText = formatDate(day[0].from).substr(0,5) +' sov hon '+Math.round(sleptTotal*10)/10+' timmar.';
+        newListItem.innerText = formatDate(day[0].from) +' sov hon '+Math.round(sleptTotal*10)/10+' timmar.';
         sleepHistory.appendChild(newListItem);
+  }
+  for (const day of byDay) {
+        const newListItem = document.createElement("li");
+        const sleptTotal = day.filter(x => x.type === 'ate').length
+        newListItem.innerText = formatDate(day[0].from)+' åt hon '+Math.round(sleptTotal*10)/10+' gånger.';
+        eatHistory.appendChild(newListItem);
   }
 }
 
@@ -171,7 +178,7 @@ function deleteActivity(activity) {
 function sameDate(date1,date2) {
   return date1.getFullYear() === date2.getFullYear() &&
     date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date1.getDate();
+    date1.getDate() === date2.getDate();
 }
 
 function startOfDay(date) {
@@ -188,5 +195,9 @@ function getDuration(activity) {
 }
 
 function formatDate(date) {
-  return date.toLocaleString('sv-SE').substr(5).replace(" ", " kl. ");
+  return date.toLocaleDateString('sv-SE', {weekday:'long', day:'numeric',month:'long'})
+}
+
+function formatTime(date) {
+  return 'kl. '+date.toLocaleString('sv-SE').substr(10,6);
 }
