@@ -3,80 +3,62 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Welcome to Glitch!</title>
-    <meta name="description" content="A cool thing made with Glitch" />
-    <link
-      id="favicon"
-      rel="icon"
-      href="https://glitch.com/edit/favicon-app.ico"
-      type="image/x-icon"
-    />
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <!-- import the webpage's stylesheet -->
-    <link rel="stylesheet" href="/style.css" />
-
-    <!-- import the webpage's client-side javascript file -->
-    <script src="/client.js" defer></script>
-  </head>
-  <body>
-    <header>
-      <h1>
-        Mat och sovklockan!
-      </h1>
-    </header>
-
-    <main>
-      <p class="bold">Hallå,</p>
-
-      <p>Skicka in när hon åt och sov:</p>
-
-      <form class="eat">
-        <label for="eat">Åt när</label>
-        <input id="eat" name="eat" aria-label="ate at" type="datetime-local" />
-        <button type="submit" id="submit-eat">Skicka</button>
-      </form>
-
-      <form class="sleep">
-        <label for="sleepFrom">Sov från</label>
-        <input
-          id="sleepFrom"
-          name="sleepFrom"
-          aria-label="sleep from"
-          type="datetime-local"
+    <head>
+        <title>Mat och sov klockan!</title>
+        <meta name="description" content="Din bebis i data" />
+        <link
+            id="favicon"
+            rel="icon"
+            href="https://glitch.com/edit/favicon-app.ico"
+            type="image/x-icon"
         />
-        <label for="sleepTo">Sov till</label>
-        <input
-          id="sleepTo"
-          name="sleepTo"
-          aria-label="sleep to"
-          type="datetime-local"
-        />
-        <button type="submit" id="submit-sleep">Skicka</button>
-      </form>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-      <h4>Idag åt hon:</h4>
-      <ol id="eatToday"></ol>
-      <h4>
-        Tidigare:
-      </h4>
-      <ol id="eatHistory"></ol>
-      <h4>Idag sov hon:</h4>
-      <ol id="sleepToday"></ol>
-      <h4>
-        Tidigare:
-      </h4>
-      <ol id="sleepHistory"></ol>
-    </main>
+        <!-- import the webpage's stylesheet -->
+        <link rel="stylesheet" href="/style.css" />
 
-    <footer>Made with <a href="https://glitch.com">Glitch</a>!</footer>
+        <!-- import the webpage's client-side javascript file -->
+        <script src="/index.js" defer></script>
+    </head>
+    <body>
+        <header>
+            <h1>
+                Mat och sov klockan!
+            </h1>
+        </header>
 
-    <!-- include the Glitch button to show what the webpage is about and
-          to make it easier for folks to view source and remix -->
-    <div class="glitchButton" style="position:fixed;top:20px;right:20px;"></div>
-    <script src="https://button.glitch.me/button.js"></script>
-  </body>
+        <main>
+            <p class="bold">Hallå,</p>
+
+            <p>
+                Mat och sov klockan hjälper dig hålla koll på hur ditt barn äter
+                och sover.
+            </p>
+
+            <form class="name">
+                <label for="babyName">Vad ska vi kalla din bebis</label>
+                <input
+                    id="babyName"
+                    name="babyName"
+                    aria-label="name of the baby"
+                    type="text"
+                    maxlength="40"
+                />
+                <button type="submit" id="submit-babyName">Skicka</button>
+            </form>
+            <div id="success">
+                <h2>Snyggt!</h2>
+                <p>
+                    Här är länken till din sida. Vem som helst med länken kan
+                    redigera tider, och tappar du bort den blir den svår att få
+                    tillbaks. Keep it secret, keep it safe.
+                </p>
+                <a id="detailsLink"
+                    >Ja ja, det blir nog bra med det där, ta mig dit bara</a
+                >
+            </div>
+        </main>
+    </body>
 </html>
