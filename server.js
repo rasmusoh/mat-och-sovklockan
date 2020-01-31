@@ -1,13 +1,8 @@
-// server.js
-// where your node app starts
-
-// init project
 const express = require('express');
 const bodyParser = require('body-parser');
 const short = require('short-uuid');
-//console.log(short.generate());
+const uuid = require('uuid/v4');
 const app = express();
-const fs = require('fs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -38,8 +33,8 @@ const dbScripts = [
          id SERIAL PRIMARY KEY,
          uid uuid NOT NULL,
          type activityType NOT NULL,
-         fromTime TIMESTAMP NOT NULL,
-         toTime TIMESTAMP NOT NULL,
+         from_time TIMESTAMP NOT NULL,
+         to_time TIMESTAMP NOT NULL,
          baby_id INTEGER REFERENCES Baby NOT NULL);`
 ];
 for (const script of dbScripts) {
@@ -50,10 +45,6 @@ for (const script of dbScripts) {
 
 app.get('/', (_, response) => {
     response.sendFile(`${__dirname}/views/index.html`);
-});
-
-app.get('/:baby', (_, response) => {
-    response.sendFile(`${__dirname}/views/details.html`);
 });
 
 app.post('/', (request, response) => {
@@ -75,7 +66,12 @@ app.post('/', (request, response) => {
     );
 });
 
-app.get(':baby/activities', (request, response) => {
+app.get('/:baby', (_, response) => {
+    response.sendFile(`${__dirname}/views/details.html`);
+});
+
+app.get('/:baby/activities', (request, response) => {
+    console.log('get activities for baby ' + request.params.baby);
     pool.query(
         `SELECT * 
             FROM Activity 
@@ -86,11 +82,11 @@ app.get(':baby/activities', (request, response) => {
             if (res && res.rows) {
                 response.send(
                     JSON.stringify(
-                        rows.map(x => ({
+                        res.rows.map(x => ({
                             id: x.uid,
                             type: x.type,
-                            from: x.fromTime,
-                            to: x.toTime
+                            from: x.from_time,
+                            to: x.to_time
                         }))
                     )
                 );
@@ -103,19 +99,20 @@ app.get(':baby/activities', (request, response) => {
     );
 });
 
-app.post(':baby/activities', (request, response) => {
+app.post('/:baby/activities', (request, response) => {
     const babyId = request.params.baby;
+    const id = uuid();
     console.log(
         `add to activities ${request.body.type}, ${request.body.from},${request.body.to} from baby ${babyId}`
     );
 
     pool.query(
-        `INSERT INTO Activity (uid, type, fromTime, toTime, baby_id) 
-            SELECT $1,$2,$3,$4,Baby.uri
+        `INSERT INTO Activity (uid, type, from_time, to_time, baby_id) 
+            SELECT $1, $2, $3, $4, Baby.id 
             FROM Baby 
-            WHERE id=$4`,
+            WHERE Baby.uri=$5`,
         [
-            cleanseString(request.body.id),
+            id,
             cleanseString(request.body.type),
             cleanseString(request.body.from),
             cleanseString(request.body.to),
@@ -128,16 +125,16 @@ app.post(':baby/activities', (request, response) => {
                 response.send({ message: 'error!' });
             } else {
                 response.status(201);
-                response.send();
+                response.send({ id: id });
             }
         }
     );
 });
 
-app.delete(':baby/activities', (request, response) => {
-    console.log(`delete activity ${request.body.id}`);
+app.delete('/:baby/activities', (request, response) => {
+    const babyId = request.params.baby;
+    console.log(`delete activity ${request.body.id} from ${babyId}`);
 
-    const cleansedId = parseInt(request.body.id);
     pool.query(
         `DELETE FROM Activity
             USING Baby
@@ -145,7 +142,7 @@ app.delete(':baby/activities', (request, response) => {
             Activity.baby_id = Baby.id AND
             Activity.uid=$1 AND
             Baby.uri=$2`,
-        [cleansedId, request.params.baby],
+        [request.body.id, babyId],
         error => {
             if (error) {
                 console.log(error);
