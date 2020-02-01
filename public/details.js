@@ -25,18 +25,13 @@ function groupByDay(activities) {
         )
         .flat()
         .sort((a, b) => a.from - b.from);
-    let day = [activities[0]],
-        days = [day],
-        date = activities[0].from.getDate();
-    for (var i = 1; i < activities.length; i++) {
-        var next = activities[i];
-        var last = activities[i - 1];
-        if (next.to.getDate() > date) {
-            date = next.to.getDate();
-            day = [];
-            days.push(day);
+    days = {};
+    for (const activity of activities) {
+        date = datePart(activity.from);
+        if (!days[date]) {
+            days[date] = [];
         }
-        day.push(next);
+        days[date].push(activity);
     }
     return days;
 }
@@ -96,26 +91,25 @@ function renderHistory() {
     sleepHistory.innerHTML = '';
     eatHistory.innerHTML = '';
     var byDay = groupByDay(activities);
-    byDay.pop();
-    for (const day of byDay) {
-        const newListItem = document.createElement('li');
-        const sleptTotal = day
+    for (const [date, activities] of Object.entries(byDay)) {
+        if (date === datePart(new Date())) continue;
+        let newListItem = document.createElement('li');
+        const sleptTotal = activities
             .filter(x => x.type === 'sleep')
             .reduce((cur, next) => cur + getDuration(next), 0);
         newListItem.innerText =
-            formatDate(day[0].from) +
+            formatDate(activities[0].from) +
             ' sov hon ' +
             Math.round(sleptTotal * 10) / 10 +
             ' timmar.';
         sleepHistory.appendChild(newListItem);
-    }
-    for (const day of byDay) {
-        const newListItem = document.createElement('li');
-        const sleptTotal = day.filter(x => x.type === 'eat').length;
+
+        newListItem = document.createElement('li');
+        const ateTotal = activities.filter(x => x.type === 'eat').length;
         newListItem.innerText =
-            formatDate(day[0].from) +
+            formatDate(activities[0].from) +
             ' åt hon ' +
-            Math.round(sleptTotal * 10) / 10 +
+            Math.round(ateTotal * 10) / 10 +
             ' gånger.';
         eatHistory.appendChild(newListItem);
     }
@@ -227,29 +221,23 @@ function sameDate(date1, date2) {
     );
 }
 
-function startOfDay(date) {
-    return new Date(`${date.toISOString().substr(0, 10)}T00:00:00`);
-}
+const datePart = date =>
+    date.toLocaleDateString('sv-SE', {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric'
+    });
 
-function toEndOfDay(date) {
-    return new Date(`${date.toISOString().substr(0, 10)}T23:59:59`);
-}
-
-function getDuration(activity) {
-    return (activity.to - activity.from) / 36e5;
-}
-
-function formatDate(date) {
-    return date.toLocaleDateString('sv-SE', {
+const startOfDay = date => new Date(`${datePart(date)}T00:00:00`);
+const toEndOfDay = date => new Date(`${datePart(date)}T23:59:59`);
+const getDuration = activity => (activity.to - activity.from) / 36e5;
+const formatDate = date =>
+    date.toLocaleDateString('sv-SE', {
         weekday: 'long',
         day: 'numeric',
         month: 'long'
     });
-}
-
-function formatTime(date) {
-    return 'kl. ' + date.toLocaleString('sv-SE').substr(10, 6);
-}
+const formatTime = date => 'kl. ' + date.toLocaleString('sv-SE').substr(10, 6);
 
 fetchBaby();
 fetchActivities();
