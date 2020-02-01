@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const short = require('short-uuid');
@@ -8,14 +9,6 @@ app.use(bodyParser.json());
 
 app.use(express.static('public'));
 
-// init postgres db
-const localdb = {
-    user: 'mosk-test',
-    host: 'localhost',
-    database: 'matochsovklockan',
-    password: 'test',
-    port: 5432
-};
 const { Pool } = require('pg');
 const pool = new Pool({
     user: process.env.RDS_USER,
