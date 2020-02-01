@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Welcome to Glitch!</title>
-        <meta name="description" content="A cool thing made with Glitch" />
+        <title>Mat och sov klockan!</title>
+        <meta name="description" content="Din bebis i data :)" />
         <link
             id="favicon"
             rel="icon"
@@ -17,9 +17,15 @@
         <link rel="stylesheet" href="/style.css" />
 
         <!-- import the webpage's client-side javascript file -->
-        <script src="/client.js" defer></script>
+        <script src="/details.js" defer></script>
     </head>
     <body>
+        <div id="error" class="technical-error" style="display:none">
+            <p>
+                <strong>Hoppsan!</strong>
+                Något gick inte som det skulle :( Kanske försök igen?
+            </p>
+        </div>
         <header>
             <h1>
                 Mat och sovklockan!
@@ -73,15 +79,5 @@
             </h4>
             <ol id="sleepHistory"></ol>
         </main>
-
-        <footer>Made with <a href="https://glitch.com">Glitch</a>!</footer>
-
-        <!-- include the Glitch button to show what the webpage is about and
-          to make it easier for folks to view source and remix -->
-        <div
-            class="glitchButton"
-            style="position:fixed;top:20px;right:20px;"
-        ></div>
-        <script src="https://button.glitch.me/button.js"></script>
     </body>
 </html>

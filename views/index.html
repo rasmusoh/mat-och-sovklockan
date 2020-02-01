@@ -23,6 +23,12 @@
         <script src="/index.js" defer></script>
     </head>
     <body>
+        <div id="error" class="technical-error" style="display:none">
+            <p>
+                <strong>Hoppsan!</strong>
+                Något gick inte som det skulle :( Kanske försök igen?
+            </p>
+        </div>
         <header>
             <h1>
                 Mat och sov klockan!
@@ -48,7 +54,7 @@
                 />
                 <button type="submit" id="submit-babyName">Skicka</button>
             </form>
-            <div id="success">
+            <div id="success" style="display: nonee" ;>
                 <h2>Snyggt!</h2>
                 <p>
                     Här är länken till din sida. Vem som helst med länken kan

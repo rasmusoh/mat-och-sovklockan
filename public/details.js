@@ -5,6 +5,7 @@ const eatInput = eatForm.elements['eat'];
 const sleepForm = document.forms[1];
 const sleepFromInput = sleepForm.elements['sleepFrom'];
 const sleepToInput = sleepForm.elements['sleepTo'];
+const error = document.querySelector('#error');
 const eatHistory = document.querySelector('#eatHistory');
 const sleepHistory = document.querySelector('#sleepHistory');
 const eatToday = document.querySelector('#eatToday');
@@ -52,18 +53,6 @@ let now = toLocalTimeString(new Date());
 eatInput.value = now;
 sleepToInput.value = now;
 sleepFromInput.value = now;
-
-fetch(window.location + '/activities', {})
-    .then(res => res.json())
-    .then(response => {
-        activities = response.map(row => ({
-            id: row.id,
-            type: row.type,
-            from: new Date(row.from),
-            to: new Date(row.to)
-        }));
-        renderActivities();
-    });
 
 function renderActivities() {
     renderTodayLists();
@@ -156,37 +145,61 @@ sleepForm.onsubmit = event => {
     };
 
     sendActivity(data);
-
-    sleepFromInput.value = toLocalTimeString(new Date());
-    sleepToInput.value = toLocalTimeString(new Date());
-    sleepFromInput.focus();
 };
 
-function sendActivity(activity) {
-    fetch(window.location + '/activities', {
+async function fetchActivities() {
+    error.style.display = 'none';
+    const result = await fetch(window.location + '/activities', {});
+    if (result.ok) {
+        const body = await result.json();
+        activities = body.map(row => ({
+            id: row.id,
+            type: row.type,
+            from: new Date(row.from),
+            to: new Date(row.to)
+        }));
+        renderActivities();
+    } else {
+        error.style.display = '';
+    }
+}
+
+async function sendActivity(activity) {
+    error.style.display = 'none';
+    const response = await fetch(window.location + '/activities', {
         method: 'POST',
         body: JSON.stringify(activity),
         headers: { 'Content-Type': 'application/json' }
-    })
-        .then(res => res.json())
-        .then(response => {
-            console.log(JSON.stringify(response));
-            activity.id = response.id;
-            activities.push(activity);
-            renderActivities();
-        });
+    });
+    if (response.ok) {
+        const body = await response.json();
+        console.log(JSON.stringify(body));
+        activity.id = body.id;
+        activities.push(activity);
+        renderActivities();
+
+        sleepFromInput.value = toLocalTimeString(new Date());
+        sleepToInput.value = toLocalTimeString(new Date());
+        sleepFromInput.focus();
+    } else {
+        error.style.display = '';
+    }
 }
 
-function deleteActivity(activity) {
+async function deleteActivity(activity) {
     if (confirm('vill du ta bort den här raden?')) {
-        fetch(window.location + '/activities', {
+        error.style.display = 'none';
+        const response = await fetch(window.location + '/activities', {
             method: 'DELETE',
             body: JSON.stringify(activity),
             headers: { 'Content-Type': 'application/json' }
-        }).then(response => {
+        });
+        if (response.ok) {
             activities.splice(activities.indexOf(activity), 1);
             renderActivities();
-        });
+        } else {
+            error.style.display = '';
+        }
     }
 }
 
@@ -221,3 +234,5 @@ function formatDate(date) {
 function formatTime(date) {
     return 'kl. ' + date.toLocaleString('sv-SE').substr(10, 6);
 }
+
+fetchActivities();

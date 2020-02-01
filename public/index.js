@@ -1,22 +1,25 @@
 const form = document.forms[0];
+const error = document.querySelector('#error');
 const babyName = form.elements['babyName'];
 const success = document.querySelector('#success');
 const detailsLink = document.querySelector('#detailsLink');
 success.style.display = 'none';
 
-form.onsubmit = event => {
+form.onsubmit = async event => {
     event.preventDefault();
-
-    fetch('/', {
+    error.style.display = 'none';
+    const response = await fetch('/', {
         method: 'POST',
         body: JSON.stringify({ name: babyName.value }),
         headers: { 'Content-Type': 'application/json' }
-    })
-        .then(res => res.json())
-        .then(response => {
-            success.style.display = '';
-            form.style.display = 'none';
-            detailsLink.setAttribute('href', response.location);
-            detailsLink.innerText = window.location + response.location;
-        });
+    });
+    if (response.ok) {
+        const body = await response.json();
+        success.style.display = '';
+        form.style.display = 'none';
+        detailsLink.setAttribute('href', body.location);
+        detailsLink.innerText = window.location + body.location;
+    } else {
+        error.style.display = '';
+    }
 };

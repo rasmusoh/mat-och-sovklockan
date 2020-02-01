@@ -32,6 +32,12 @@ form {
     border-radius: 3px;
 }
 
+.technical-error {
+    background: darkmagenta;
+    padding: 8px;
+    color: white;
+}
+
 form.name,
 form.eat,
 #eatToday,
