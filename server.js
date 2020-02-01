@@ -12,7 +12,7 @@ app.use(express.static('public'));
 const { Pool } = require('pg');
 const pool = new Pool({
     user: process.env.RDS_USER,
-    host: process.env.RDS_HOST,
+    host: process.env.RDS_HOSTNAME,
     database: process.env.RDS_DB_NAME,
     password: process.env.RDS_PASSWORD,
     port: process.env.RDS_PORT
