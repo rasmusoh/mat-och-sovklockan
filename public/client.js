@@ -67,7 +67,7 @@ fetch(window.location + '/activities', {})
 
 function renderActivities() {
     renderTodayLists();
-    renderStatistics();
+    renderHistory();
 }
 
 function renderTodayLists() {
@@ -98,7 +98,7 @@ function renderTodayLists() {
     }
 }
 
-function renderStatistics() {
+function renderHistory() {
     sleepHistory.innerHTML = '';
     eatHistory.innerHTML = '';
     var byDay = groupByDay(activities);

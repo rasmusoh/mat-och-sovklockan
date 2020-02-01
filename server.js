@@ -9,13 +9,20 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 // init postgres db
-const { Pool } = require('pg');
-const pool = new Pool({
+const localdb = {
     user: 'mosk-test',
     host: 'localhost',
     database: 'matochsovklockan',
     password: 'test',
     port: 5432
+};
+const { Pool } = require('pg');
+const pool = new Pool({
+    user: process.env.RDS_USER,
+    host: process.env.RDS_HOST,
+    database: process.env.RDS_DB_NAME,
+    password: process.env.RDS_PASSWORD,
+    port: process.env.RDS_PORT
 });
 pool.on('error', (err, _) => {
     console.error('Unexpected error on idle client', err);
