@@ -28,6 +28,6 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: mat-och-sovklockan
         environment_name: MatOchSovklockan-env 
-        version_label: BUILD_NUMBER
+        version_label: ${{ steps.buildnumber.outputs.build_number }}
         region: us-east-1
         deployment_package: deploy.zip
