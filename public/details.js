@@ -10,6 +10,7 @@ const eatHistory = document.querySelector('#eatHistory');
 const sleepHistory = document.querySelector('#sleepHistory');
 const eatToday = document.querySelector('#eatToday');
 const sleepToday = document.querySelector('#sleepToday');
+const babyNames = document.querySelectorAll('.babyName');
 
 function groupByDay(activities) {
     if (activities.length === 0) return [];
@@ -57,6 +58,10 @@ sleepFromInput.value = now;
 function renderActivities() {
     renderTodayLists();
     renderHistory();
+}
+
+function renderName(name) {
+    babyNames.forEach(x => (x.innerText = name));
 }
 
 function renderTodayLists() {
@@ -147,6 +152,17 @@ sleepForm.onsubmit = event => {
     sendActivity(data);
 };
 
+async function fetchBaby() {
+    error.style.display = 'none';
+    const result = await fetch(window.location + '/baby', {});
+    if (result.ok) {
+        const body = await result.json();
+        renderName(body.name);
+    } else {
+        error.style.display = '';
+    }
+}
+
 async function fetchActivities() {
     error.style.display = 'none';
     const result = await fetch(window.location + '/activities', {});
@@ -235,4 +251,5 @@ function formatTime(date) {
     return 'kl. ' + date.toLocaleString('sv-SE').substr(10, 6);
 }
 
+fetchBaby();
 fetchActivities();
