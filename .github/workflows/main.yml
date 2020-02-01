@@ -1,0 +1,27 @@
+name: Deploy master
+on:
+  push:
+    branches:
+    - master
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Checkout source code
+      uses: actions/checkout@v1
+
+    - name: Generate deployment package
+      run: zip deploy.zip *.js *.json *.html *.css
+      
+    - name: Deploy to EB
+      uses: einaregilsson/beanstalk-deploy@v5
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: mat-och-sovklockan
+        environment_name: MatOchSovklockan-env 
+        version_label: 1
+        region: us-east-1
+        deployment_package: deploy.zip
