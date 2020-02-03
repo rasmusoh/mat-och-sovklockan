@@ -66,7 +66,8 @@ function getNode(n, v) {
 
 function renderGraph() {
     let byDay = groupByDay(activities),
-        barWidth = 50,
+        barWidth = 17,
+        margin = 3,
         headerHeight = 20,
         minHeight = 2,
         bars = 0;
@@ -80,10 +81,10 @@ function renderGraph() {
     style.textContent =
         '.small { color:black; font: italic 13px sans-serif; } .medium { color:black; font: 16px sans-serif; }';
 
-    for (const [date, activities] of Object.entries(byDay)) {
+    for (const [date, activities] of Object.entries(byDay).slice(-5)) {
         var weekday = getNode('text', {
             class: 'small',
-            x: bars * (barWidth + 10),
+            x: `${(margin + barWidth) * bars}%`,
             y: 10
         });
         weekday.textContent = dayOfWeek(activities[0].from);
@@ -92,9 +93,9 @@ function renderGraph() {
             fromPixel = timeToPixel(activity.from);
             toPixel = timeToPixel(activity.to);
             var r = getNode('rect', {
-                x: bars * (barWidth + 10),
+                x: `${bars * (barWidth + margin)}%`,
                 y: fromPixel,
-                width: barWidth,
+                width: barWidth + '%',
                 height: Math.max(toPixel - fromPixel, minHeight),
                 fill: activity.type === 'sleep' ? 'cyan' : 'pink'
             });
@@ -104,12 +105,12 @@ function renderGraph() {
         const ateTotal = activities.filter(x => x.type === 'eat').length;
         const sleptTotalText = getNode('text', {
             class: 'small',
-            x: bars * (barWidth + 10) + 10,
+            x: bars * (barWidth + margin) + margin + '%',
             y: 300
         });
         const ateTotalText = getNode('text', {
             class: 'small',
-            x: bars * (barWidth + 10) + 10,
+            x: bars * (barWidth + margin) + margin + '%',
             y: 320
         });
         sleptTotalText.textContent = sleptTotal + ' h';
