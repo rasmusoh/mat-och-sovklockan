@@ -45,8 +45,29 @@ const getSleptTotal = activities =>
 function initializeInputs() {
     let now = toLocalTimeString(new Date());
     eatInput.value = now;
-    sleepToInput.value = now;
+    eatInput.setAttribute('max', new Date());
+
     sleepFromInput.value = now;
+    sleepFromInput.setAttribute('max', toEndOfDay(new Date()));
+    sleepFromInput.addEventListener('change', e => {
+        if (sleepFromInput.value > sleepToInput.value) {
+            sleepFromInput.setCustomValidity('Från måste vara innan till :)');
+        } else {
+            sleepFromInput.setCustomValidity('');
+            sleepToInput.setCustomValidity('');
+        }
+    });
+
+    sleepToInput.value = now;
+    sleepToInput.setAttribute('max', toEndOfDay(new Date()));
+    sleepToInput.addEventListener('change', e => {
+        if (sleepFromInput.value > sleepToInput.value) {
+            sleepToInput.setCustomValidity('Från måste vara innan till :)');
+        } else {
+            sleepFromInput.setCustomValidity('');
+            sleepToInput.setCustomValidity('');
+        }
+    });
 }
 
 function renderActivities() {
