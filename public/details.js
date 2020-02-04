@@ -87,25 +87,47 @@ function getNode(n, v) {
 
 function renderGraph() {
     let byDay = groupByDay(activities),
-        barWidth = 17,
+        barWidth = 15,
         margin = 3,
+        timeAxisWidth = 10,
         headerHeight = 20,
         minHeight = 2,
+        pixelsPerHour = 10,
         bars = 0;
     const timeToPixel = date =>
-        headerHeight + date.getHours() * 10 + date.getMinutes() / 6;
+        headerHeight +
+        date.getHours() * pixelsPerHour +
+        (date.getMinutes() * pixelsPerHour) / 60;
     graph.innerHTML = '';
 
     const svg = getNode('svg', { width: '100%', height: '400' });
     const style = getNode('style');
     svg.appendChild(style);
     style.textContent =
-        '.small { color:black; font: italic 13px sans-serif; } .medium { color:black; font: 16px sans-serif; }';
+        '.xsmall { color:black; font: italic 10px sans-serif; } .small { color:black; font: italic 13px sans-serif; } .medium { color:black; font: 16px sans-serif; }';
+    for (const hour of [4, 8, 12, 16, 20, 24]) {
+        const y = headerHeight + hour * pixelsPerHour;
+        const clockText = getNode('text', {
+            class: 'xsmall',
+            x: 0,
+            y: y + 4
+        });
+        clockText.textContent = ('00' + hour).slice(-2) + ':00';
+        const line = getNode('line', {
+            x1: 45,
+            x2: '100%',
+            y1: y,
+            y2: y,
+            stroke: 'lightgrey'
+        });
+        svg.appendChild(clockText);
+        svg.appendChild(line);
+    }
 
     for (const [date, activities] of Object.entries(byDay).slice(-5)) {
         var weekday = getNode('text', {
             class: 'small',
-            x: `${(margin + barWidth) * bars}%`,
+            x: `${timeAxisWidth + (margin + barWidth) * bars}%`,
             y: 10
         });
         weekday.textContent = dayOfWeek(activities[0].from);
@@ -114,7 +136,7 @@ function renderGraph() {
             fromPixel = timeToPixel(activity.from);
             toPixel = timeToPixel(activity.to);
             var r = getNode('rect', {
-                x: `${bars * (barWidth + margin)}%`,
+                x: `${timeAxisWidth + bars * (barWidth + margin)}%`,
                 y: fromPixel,
                 width: barWidth + '%',
                 height: Math.max(toPixel - fromPixel, minHeight),
@@ -126,12 +148,12 @@ function renderGraph() {
         const ateTotal = activities.filter(x => x.type === 'eat').length;
         const sleptTotalText = getNode('text', {
             class: 'small',
-            x: bars * (barWidth + margin) + margin + '%',
+            x: timeAxisWidth + bars * (barWidth + margin) + '%',
             y: 300
         });
         const ateTotalText = getNode('text', {
             class: 'small',
-            x: bars * (barWidth + margin) + margin + '%',
+            x: timeAxisWidth + bars * (barWidth + margin) + '%',
             y: 320
         });
         sleptTotalText.textContent = sleptTotal + ' h';
@@ -160,12 +182,12 @@ function renderTodayLists() {
         newListItem.appendChild(deleteButton);
         newListItem.id = 'activity-' + activity.id;
         if (activity.type === 'eat') {
-            text.innerText = `${formatTime(activity.from)}`;
+            text.innerText = `kl. ${formatTime(activity.from)}`;
             eatToday.appendChild(newListItem);
         } else {
-            text.innerText = `Från ${formatTime(
+            text.innerText = `Från kl. ${formatTime(
                 activity.from
-            )} till ${formatTime(activity.to)}`;
+            )} till kl. ${formatTime(activity.to)}`;
             sleepToday.appendChild(newListItem);
         }
     }
@@ -292,7 +314,7 @@ const dayOfWeek = date =>
     date.toLocaleDateString('sv-SE', {
         weekday: 'short'
     });
-const formatTime = date => 'kl. ' + date.toLocaleString('sv-SE').substr(10, 6);
+const formatTime = date => date.toLocaleString('sv-SE').substr(10, 6);
 const toLocalTimeString = date => {
     let dateString = new Date(
         date.getTime() - date.getTimezoneOffset() * 60000
