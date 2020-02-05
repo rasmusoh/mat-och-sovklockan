@@ -140,7 +140,7 @@ function renderGraph() {
                 y: fromPixel,
                 width: barWidth + '%',
                 height: Math.max(toPixel - fromPixel, minHeight),
-                fill: activity.type === 'sleep' ? 'cyan' : 'pink'
+                fill: activity.type === 'eat' ? '#d62972' : '#34aed4'
             });
             svg.appendChild(r);
         }

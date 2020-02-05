@@ -7,12 +7,13 @@
 
 body {
     font-family: helvetica, arial, sans-serif;
+    background-color: #fffff8;
     margin: 2em;
 }
 
 h1 {
     font-style: italic;
-    color: #373fff;
+    color: #4b94af;
 }
 
 .bold {
@@ -42,21 +43,26 @@ form.name,
 form.eat,
 #eatToday,
 #eatHistory {
-    background-color: pink;
+    background-color: #d62972;
+    box-shadow: 4px 4px #bc2f6e;
+    color: white;
 }
 
 form.sleep,
 #sleepToday,
 #sleepHistory {
-    background-color: cyan;
+    background-color: #34aed4;
+    box-shadow: 4px 4px #4b94af;
+    color: white;
 }
 
 input {
+    background-color: #fff;
     display: block;
     margin-bottom: 10px;
     padding: 5px;
     width: 100%;
-    border: 1px solid lightgrey;
+    border: 1px solid #a8b2b9;
     border-radius: 3px;
     font-size: 16px;
 }
@@ -64,8 +70,8 @@ input {
 button {
     font-size: 16px;
     border-radius: 3px;
-    background-color: lightgrey;
-    border: 1px solid grey;
+    background-color: #e4e4e4;
+    border: 1px solid #949494;
     box-shadow: 2px 2px teal;
     cursor: pointer;
 }
