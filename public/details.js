@@ -11,37 +11,6 @@ const sleepToday = document.querySelector('#sleepToday');
 const babyNames = document.querySelectorAll('.babyName');
 const graph = document.querySelector('#graph');
 
-function groupByDay(activities) {
-    if (activities.length === 0) return [];
-    activities = activities
-        .map(x =>
-            x.from.getDate() !== x.to.getDate()
-                ? [
-                      { type: x.type, from: x.from, to: toEndOfDay(x.from) },
-                      { type: x.type, from: startOfDay(x.to), to: x.to }
-                  ]
-                : x
-        )
-        .flat()
-        .sort((a, b) => a.from - b.from);
-    days = {};
-    for (const activity of activities) {
-        date = datePart(activity.from);
-        if (!days[date]) {
-            days[date] = [];
-        }
-        days[date].push(activity);
-    }
-    return days;
-}
-
-const getSleptTotal = activities =>
-    Math.round(
-        activities
-            .filter(x => x.type === 'sleep')
-            .reduce((cur, next) => cur + getDuration(next), 0) * 100
-    ) / 100;
-
 function initializeInputs() {
     let now = toLocalTimeString(new Date());
     eatInput.value = now;
@@ -71,108 +40,18 @@ function initializeInputs() {
 }
 
 function renderActivities() {
-    renderGraph();
-    renderTodayLists();
+    renderGraph(activities);
+    renderTodayLists(activities);
 }
 
 function renderName(name) {
     babyNames.forEach(x => (x.innerText = name));
 }
 
-function getNode(n, v) {
-    n = document.createElementNS('http://www.w3.org/2000/svg', n);
-    for (var p in v) n.setAttributeNS(null, p, v[p]);
-    return n;
-}
-
-function renderGraph() {
-    let byDay = groupByDay(activities),
-        barWidth = 15,
-        margin = 3,
-        timeAxisWidth = 10,
-        headerHeight = 20,
-        minHeight = 2,
-        pixelsPerHour = 10,
-        bars = 0;
-    const timeToPixel = date =>
-        headerHeight +
-        date.getHours() * pixelsPerHour +
-        (date.getMinutes() * pixelsPerHour) / 60;
-    graph.innerHTML = '';
-
-    const svg = getNode('svg', { width: '100%', height: '400' });
-    const style = getNode('style');
-    svg.appendChild(style);
-    style.textContent =
-        '.xsmall { color:black; font: italic 10px sans-serif; } .small { color:black; font: italic 13px sans-serif; } .medium { color:black; font: 16px sans-serif; }';
-    for (const hour of [4, 8, 12, 16, 20, 24]) {
-        const y = headerHeight + hour * pixelsPerHour;
-        const clockText = getNode('text', {
-            class: 'xsmall',
-            x: 0,
-            y: y + 4
-        });
-        clockText.textContent = ('00' + hour).slice(-2) + ':00';
-        const line = getNode('line', {
-            x1: 45,
-            x2: '100%',
-            y1: y,
-            y2: y,
-            stroke: 'lightgrey'
-        });
-        svg.appendChild(clockText);
-        svg.appendChild(line);
-    }
-
-    for (const [date, activities] of Object.entries(byDay).slice(-5)) {
-        var weekday = getNode('text', {
-            class: 'small',
-            x: `${timeAxisWidth + (margin + barWidth) * bars}%`,
-            y: 10
-        });
-        weekday.textContent = dayOfWeek(activities[0].from);
-        svg.appendChild(weekday);
-        for (const activity of activities) {
-            fromPixel = timeToPixel(activity.from);
-            toPixel = timeToPixel(activity.to);
-            var r = getNode('rect', {
-                x: `${timeAxisWidth + bars * (barWidth + margin)}%`,
-                y: fromPixel,
-                width: barWidth + '%',
-                height: Math.max(toPixel - fromPixel, minHeight),
-                fill: activity.type === 'eat' ? '#d62972' : '#34aed4'
-            });
-            svg.appendChild(r);
-        }
-        const sleptTotal = getSleptTotal(activities);
-        const ateTotal = activities.filter(x => x.type === 'eat').length;
-        const sleptTotalText = getNode('text', {
-            class: 'small',
-            x: timeAxisWidth + bars * (barWidth + margin) + '%',
-            y: 300
-        });
-        const ateTotalText = getNode('text', {
-            class: 'small',
-            x: timeAxisWidth + bars * (barWidth + margin) + '%',
-            y: 320
-        });
-        sleptTotalText.textContent = sleptTotal + ' h';
-        ateTotalText.textContent = ateTotal + ' ggr';
-        svg.appendChild(sleptTotalText);
-        svg.appendChild(ateTotalText);
-        bars++;
-    }
-    graph.appendChild(svg);
-}
-
-function renderTodayLists() {
+function renderTodayLists(activities) {
     sleepToday.innerHTML = '';
     eatToday.innerHTML = '';
-    var today = new Date();
-    var activitiesFromToday = activities
-        .filter(x => sameDate(x.to, today))
-        .sort((a, b) => a.from - b.from);
-    for (const activity of activitiesFromToday) {
+    for (const activity of activitiesFromToday(activities)) {
         const newListItem = document.createElement('li');
         const text = document.createElement('span');
         const deleteButton = document.createElement('button');
@@ -290,38 +169,6 @@ async function deleteActivity(activity) {
         }
     }
 }
-
-const sameDate = (date1, date2) =>
-    date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate();
-const datePart = date =>
-    date.toLocaleDateString('sv-SE', {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric'
-    });
-const startOfDay = date => new Date(`${datePart(date)}T00:00:00`);
-const toEndOfDay = date => new Date(`${datePart(date)}T23:59:59`);
-const getDuration = activity => (activity.to - activity.from) / 36e5;
-const formatDate = date =>
-    date.toLocaleDateString('sv-SE', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long'
-    });
-const dayOfWeek = date =>
-    date.toLocaleDateString('sv-SE', {
-        weekday: 'short'
-    });
-const formatTime = date => date.toLocaleString('sv-SE').substr(10, 6);
-const toLocalTimeString = date => {
-    let dateString = new Date(
-        date.getTime() - date.getTimezoneOffset() * 60000
-    ).toISOString();
-    dateString = dateString.substr(0, dateString.length - 8);
-    return dateString;
-};
 
 initializeInputs();
 fetchBaby();

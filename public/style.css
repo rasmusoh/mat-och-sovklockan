@@ -13,7 +13,8 @@ body {
 
 h1 {
     font-style: italic;
-    color: #4b94af;
+    color: #34aed4;
+    text-shadow: 1px 1px #4b94af;
 }
 
 .bold {
