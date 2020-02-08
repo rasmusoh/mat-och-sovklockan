@@ -155,22 +155,27 @@ class ResponsiveGraph {
     }
 }
 
+const byDayPlotSettings = days => ({
+    xFrom: days[0],
+    xTo: days[days.length - 1],
+    xStep: 36e5 * 24,
+    xGetLegend: x =>
+        days.length <= 7 ? dayOfWeek(new Date(x)) : dateOfYear(new Date(x)),
+    xAxisWidthPrecentage: 10,
+    yAxisHeight: 20,
+    totalHeight: 260,
+    styles: textStyles
+});
+
 function renderSleptTotalPlot(querySelector, activitiesByDay) {
     const days = activitiesByDay.map(x => x.day);
     const options = {
+        ...byDayPlotSettings(days),
         querySelector: querySelector,
-        xFrom: parseInt(days[0]),
-        xTo: parseInt(days[days.length - 1]),
-        xStep: 36e5 * 24,
-        xGetLegend: x => dayOfWeek(new Date(x)),
-        xAxisWidthPrecentage: 10,
         yFrom: 0,
         yTo: 24,
         yStep: 4,
-        yGetLegend: y => y + ' h',
-        yAxisHeight: 20,
-        totalHeight: 260,
-        styles: textStyles
+        yGetLegend: y => y + ' h'
     };
     var graph = new ResponsiveGraph(options);
     graph.addBars(
@@ -184,19 +189,12 @@ function renderSleptTotalPlot(querySelector, activitiesByDay) {
 function renderAteTotalPlot(querySelector, activitiesByDay) {
     const days = activitiesByDay.map(x => x.day);
     const options = {
+        ...byDayPlotSettings(days),
         querySelector: querySelector,
-        xFrom: parseInt(days[0]),
-        xTo: parseInt(days[days.length - 1]),
-        xStep: 36e5 * 24,
-        xGetLegend: x => dayOfWeek(new Date(x)),
-        xAxisWidthPrecentage: 10,
         yFrom: 0,
         yTo: 20,
         yStep: 4,
-        yGetLegend: y => y + ' ggr',
-        yAxisHeight: 30,
-        totalHeight: 260,
-        styles: textStyles
+        yGetLegend: y => y + ' ggr'
     };
     var graph = new ResponsiveGraph(options);
     graph.addBars(
@@ -212,19 +210,12 @@ function renderAteTotalPlot(querySelector, activitiesByDay) {
 function renderDaySchedulePlot(querySelector, activitiesByDay) {
     const days = activitiesByDay.map(x => x.day);
     const options = {
+        ...byDayPlotSettings(days),
         querySelector: querySelector,
-        xFrom: days[0],
-        xTo: days[days.length - 1],
-        xStep: 36e5 * 24,
-        xGetLegend: x => dayOfWeek(new Date(x)),
-        xAxisWidthPrecentage: 10,
         yFrom: 24,
         yTo: 0,
         yStep: 4,
-        yGetLegend: y => ('00' + y).slice(-2) + ':00',
-        yAxisHeight: 30,
-        totalHeight: 260,
-        styles: textStyles
+        yGetLegend: y => ('00' + y).slice(-2) + ':00'
     };
     var graph = new ResponsiveGraph(options);
     graph.addStackedBars(
@@ -261,19 +252,12 @@ function renderDaySchedulePlot(querySelector, activitiesByDay) {
 function renderSleptLongestPlot(querySelector, activitiesByDay) {
     const days = activitiesByDay.map(x => x.day);
     const options = {
+        ...byDayPlotSettings(days),
         querySelector: querySelector,
-        xFrom: parseInt(days[0]),
-        xTo: parseInt(days[days.length - 1]),
-        xStep: 36e5 * 24,
-        xGetLegend: x => dayOfWeek(new Date(x)),
-        xAxisWidthPrecentage: 10,
         yFrom: 0,
-        yTo: 24,
-        yStep: 4,
-        yGetLegend: y => y + ' h',
-        yAxisHeight: 10,
-        totalHeight: 260,
-        styles: textStyles
+        yTo: 12,
+        yStep: 1,
+        yGetLegend: y => y + ' h'
     };
     var graph = new ResponsiveGraph(options);
     graph.addBars(
