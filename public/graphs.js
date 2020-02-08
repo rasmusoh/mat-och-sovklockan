@@ -202,7 +202,7 @@ function renderAteTotalPlot(activities) {
     return graph.render();
 }
 
-function renderStackedBarsPlot(activities) {
+function renderDaySchedulePlot(activities) {
     const byDay = groupByDay(activities);
     const days = Object.keys(byDay).map(x => parseInt(x));
     const options = {
@@ -247,6 +247,38 @@ function renderStackedBarsPlot(activities) {
                 .map(x => x.to.getHours() + (x.to.getMinutes() + 20) / 60)
         ),
         '#d62972'
+    );
+    return graph.render();
+}
+
+function renderSleptLongestPlot(activities) {
+    const byDay = groupByDay(activities);
+    const days = Object.keys(byDay);
+    const options = {
+        xFrom: parseInt(days[0]),
+        xTo: parseInt(days[days.length - 1]),
+        xStep: 36e5 * 24,
+        xGetLegend: x => dayOfWeek(new Date(x)),
+        xAxisWidthPrecentage: 10,
+        yFrom: 0,
+        yTo: 24,
+        yStep: 4,
+        yGetLegend: y => y + ' h',
+        yAxisHeight: 10,
+        totalHeight: 260,
+        styles: textStyles
+    };
+    var graph = new ResponsiveGraph(options);
+    graph.addBars(
+        days,
+        Object.values(byDay).map(activities =>
+            activities.reduce(
+                (max, next) =>
+                    getDuration(next) > max ? getDuration(next) : max,
+                0
+            )
+        ),
+        '#34aed4'
     );
     return graph.render();
 }
