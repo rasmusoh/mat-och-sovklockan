@@ -1,10 +1,12 @@
 let activities = [];
+let noDaysOfHistory = 7;
 
 const eatForm = document.forms[0];
 const eatInput = eatForm.elements['eat'];
 const sleepForm = document.forms[1];
 const sleepFromInput = sleepForm.elements['sleepFrom'];
 const sleepToInput = sleepForm.elements['sleepTo'];
+const lookBackSelect = document.querySelector('#lookback');
 const error = document.querySelector('#error');
 const eatToday = document.querySelector('#eatToday');
 const sleepToday = document.querySelector('#sleepToday');
@@ -39,7 +41,7 @@ function initializeInputs() {
 }
 
 function renderActivities() {
-    const activitiesByDay = groupByDay(activities);
+    const activitiesByDay = groupByDay(activities).slice(-noDaysOfHistory);
     renderDaySchedulePlot('#daySchedule', activitiesByDay);
     renderSleptTotalPlot('#sleptTotal', activitiesByDay);
     renderAteTotalPlot('#ateTotal', activitiesByDay);
@@ -79,6 +81,11 @@ function renderTodayLists(activities) {
 const removeActivity = activity => {
     const listItem = document.getElementById('activity-' + activity.id);
     listItem.parentNode.removeChild(listItem);
+};
+
+lookBackSelect.onchange = event => {
+    noDaysOfHistory = parseInt(event.target.value);
+    renderActivities();
 };
 
 eatForm.onsubmit = event => {

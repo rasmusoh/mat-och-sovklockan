@@ -62,32 +62,40 @@
                 <button type="submit" id="submit-sleep">Skicka</button>
             </form>
 
-            <h2>
-                Idag
-            </h2>
-            <h4>åt <span class="babyName"></span>:</h4>
-            <ol id="eatToday"></ol>
-            <h4>sov <span class="babyName"></span>:</h4>
-            <ol id="sleepToday"></ol>
-            <h2>
-                Tidigare
-            </h2>
-            <h4>
-                Sov totalt
-            </h4>
-            <div id="sleptTotal"></div>
-            <h4>
-                Åt totalt
-            </h4>
-            <div id="ateTotal"></div>
-            <h4>
-                Dygnschema
-            </h4>
-            <div id="daySchedule"></div>
-            <h4>
-                Längsta sammanhängande sovtid
-            </h4>
-            <div id="sleptLongest"></div>
+            <div class="stats">
+                <h2>
+                    Idag
+                </h2>
+                <h4>åt <span class="babyName"></span>:</h4>
+                <ol id="eatToday"></ol>
+                <h4>sov <span class="babyName"></span>:</h4>
+                <ol id="sleepToday"></ol>
+                <h2>
+                    Tidigare
+                </h2>
+                <label for="lookback"> Visa</label>
+                <select name="lookback" id="lookback">
+                    <option value="7">7 dagar</option>
+                    <option value="30">30 dagar</option>
+                    <option value="10000">allt</option>
+                </select>
+                <h4>
+                    Sov totalt
+                </h4>
+                <div id="sleptTotal"></div>
+                <h4>
+                    Åt totalt
+                </h4>
+                <div id="ateTotal"></div>
+                <h4>
+                    Dygnschema
+                </h4>
+                <div id="daySchedule"></div>
+                <h4>
+                    Längsta sammanhängande sovtid
+                </h4>
+                <div id="sleptLongest"></div>
+            </div>
         </main>
         <script
             data-goatcounter="https://matochsovklockan.goatcounter.com/count"
