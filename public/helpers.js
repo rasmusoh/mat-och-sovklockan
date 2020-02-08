@@ -68,7 +68,7 @@ const dayOfWeek = date =>
     });
 
 const dateOfYear = date =>
-    dateOfYear.toLocaleString('sv-SE', {
+    date.toLocaleString('sv-SE', {
         day: 'numeric',
         month: 'numeric'
     });
