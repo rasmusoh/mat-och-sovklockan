@@ -4,7 +4,181 @@ function getNode(n, v) {
     return n;
 }
 
-function renderGraph() {
+const textStyles = `.xsmall { color:black; font: italic 10px sans-serif; } 
+        .small { color:black; font: italic 13px sans-serif; }`;
+
+class ResponsiveGraph {
+    constructor({
+        xFrom,
+        xTo,
+        xStep,
+        xGetLegend,
+        xAxisWidthPrecentage,
+        yFrom,
+        yTo,
+        yStep,
+        yGetLegend,
+        yAxisHeight,
+        totalHeight,
+        styles
+    }) {
+        if (this.xFrom >= this.xTo)
+            throw new Error('xFrom cannot be smaller than xTo');
+        if (this.yFrom >= this.yTo)
+            throw new Error('yFrom cannot be smaller than yTo');
+        this.xFrom = xFrom;
+        this.xTo = xTo;
+        this.xStep = xStep;
+        this.xGetLegend = xGetLegend;
+        this.xAxisWidthPrecentage = xAxisWidthPrecentage;
+        this.yFrom = yFrom;
+        this.yTo = yTo;
+        this.yStep = yStep;
+        this.yGetLegend = yGetLegend;
+        this.styles = styles;
+        this.yAxisHeight = yAxisHeight;
+        this.totalHeight = totalHeight;
+        this.bottomMargin = 10;
+        this.graphElements = [];
+    }
+
+    getX(x) {
+        return (
+            this.xAxisWidthPrecentage +
+            ((100 - this.xAxisWidthPrecentage) * (x - this.xFrom)) /
+                (this.xTo - this.xFrom) +
+            '%'
+        );
+    }
+    getY(y) {
+        const graphHeight = this.totalHeight - this.yAxisHeight;
+        const positionOnGraph =
+            graphHeight -
+            (graphHeight * (y - this.yFrom)) / (this.yTo - this.yFrom);
+        return this.yAxisHeight + positionOnGraph;
+    }
+
+    renderYAxis() {
+        const container = getNode('g');
+        for (var y = this.yFrom; y < this.yTo; y += this.yStep) {
+            const legend = getNode('text', {
+                class: 'xsmall',
+                x: 0,
+                y: this.getY(y) + 4
+            });
+            legend.textContent = this.yGetLegend(y);
+            const line = getNode('line', {
+                x1: this.xAxisWidthPrecentage + '%',
+                x2: '100%',
+                y1: this.getY(y),
+                y2: this.getY(y),
+                stroke: 'lightgrey'
+            });
+            container.appendChild(legend);
+            container.appendChild(line);
+        }
+        return container;
+    }
+
+    renderXAxis() {
+        const container = getNode('g');
+        for (var x = this.xFrom; x <= this.xTo; x += this.xStep) {
+            const legend = getNode('text', {
+                class: 'xsmall',
+                x: this.getX(x),
+                y: this.yAxisHeight
+            });
+            legend.textContent = this.xGetLegend(x);
+            container.appendChild(legend);
+        }
+        return container;
+    }
+
+    addBars(xs, ys, color) {
+        const barWidth = 0.9 * ((100 - this.xAxisWidthPrecentage) / xs.length);
+        const container = getNode('g');
+        for (let i = 0; i < xs.length; i++) {
+            const r = getNode('rect', {
+                x: this.getX(xs[i]),
+                y: this.getY(ys[i]),
+                width: barWidth + '%',
+                height: this.totalHeight,
+                fill: color
+            });
+            container.appendChild(r);
+        }
+        this.graphElements.push(container);
+    }
+
+    render() {
+        const svg = getNode('svg', {
+            width: '100%',
+            height: this.totalHeight + this.bottomMargin
+        });
+        const style = getNode('style');
+        svg.appendChild(style);
+        style.textContent = this.styles;
+        svg.appendChild(this.renderYAxis());
+        svg.appendChild(this.renderXAxis());
+        for (const el of this.graphElements) {
+            svg.appendChild(el);
+        }
+
+        return svg;
+    }
+}
+
+function renderSleptTotalPlot(activities) {
+    const byDay = groupByDay(activities);
+    const days = Object.keys(byDay);
+    const options = {
+        xFrom: parseInt(days[0]),
+        xTo: parseInt(days[days.length - 1]),
+        xStep: 36e5 * 24,
+        xGetLegend: x => dayOfWeek(new Date(x)),
+        xAxisWidthPrecentage: 10,
+        yFrom: 0,
+        yTo: 24,
+        yStep: 4,
+        yGetLegend: y => y + ' h',
+        yAxisHeight: 10,
+        totalHeight: 260,
+        styles: textStyles
+    };
+    var graph = new ResponsiveGraph(options);
+    graph.addBars(days, Object.values(byDay).map(getSleptTotal), '#34aed4');
+    return graph.render();
+}
+
+function renderAteTotalPlot(activities) {
+    const byDay = groupByDay(activities);
+    const days = Object.keys(byDay);
+    const options = {
+        xFrom: parseInt(days[0]),
+        xTo: parseInt(days[days.length - 1]),
+        xStep: 36e5 * 24,
+        xGetLegend: x => dayOfWeek(new Date(x)),
+        xAxisWidthPrecentage: 10,
+        yFrom: 0,
+        yTo: 20,
+        yStep: 4,
+        yGetLegend: y => y + ' ggr',
+        yAxisHeight: 10,
+        totalHeight: 260,
+        styles: textStyles
+    };
+    var graph = new ResponsiveGraph(options);
+    graph.addBars(
+        days,
+        Object.values(byDay).map(
+            activities => activities.filter(x => x.type === 'eat').length
+        ),
+        '#d62972'
+    );
+    return graph.render();
+}
+
+function renderStackedBarsPlot(activities) {
     let byDay = groupByDay(activities),
         barWidth = 15,
         margin = 3,
@@ -17,9 +191,11 @@ function renderGraph() {
         headerHeight +
         date.getHours() * pixelsPerHour +
         (date.getMinutes() * pixelsPerHour) / 60;
-    graph.innerHTML = '';
 
-    const svg = getNode('svg', { width: '100%', height: '400' });
+    const svg = getNode('svg', {
+        width: '100%',
+        height: '400'
+    });
     const style = getNode('style');
     svg.appendChild(style);
     style.textContent =
@@ -81,5 +257,5 @@ function renderGraph() {
         svg.appendChild(ateTotalText);
         bars++;
     }
-    graph.appendChild(svg);
+    return svg;
 }

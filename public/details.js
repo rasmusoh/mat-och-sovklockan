@@ -9,7 +9,9 @@ const error = document.querySelector('#error');
 const eatToday = document.querySelector('#eatToday');
 const sleepToday = document.querySelector('#sleepToday');
 const babyNames = document.querySelectorAll('.babyName');
-const graph = document.querySelector('#graph');
+const daySchedule = document.querySelector('#daySchedule');
+const sleptTotal = document.querySelector('#sleptTotal');
+const ateTotal = document.querySelector('#ateTotal');
 
 function initializeInputs() {
     let now = toLocalTimeString(new Date());
@@ -40,7 +42,15 @@ function initializeInputs() {
 }
 
 function renderActivities() {
-    renderGraph(activities);
+    daySchedule.innerHTML = '';
+    const svg = renderStackedBarsPlot(activities);
+    daySchedule.appendChild(svg);
+    sleptTotal.innerHTML = '';
+    const sleptTotalPlot = renderSleptTotalPlot(activities);
+    sleptTotal.appendChild(sleptTotalPlot);
+    ateTotal.innerHTML = '';
+    const ateTotalPlot = renderAteTotalPlot(activities);
+    ateTotal.appendChild(ateTotalPlot);
     renderTodayLists(activities);
 }
 

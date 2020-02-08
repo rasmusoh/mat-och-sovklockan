@@ -11,9 +11,9 @@ function groupByDay(activities) {
         )
         .flat()
         .sort((a, b) => a.from - b.from);
-    days = {};
+    const days = {};
     for (const activity of activities) {
-        date = datePart(activity.from);
+        const date = startOfDay(activity.from).getTime();
         if (!days[date]) {
             days[date] = [];
         }
@@ -62,6 +62,12 @@ const formatDate = date =>
 const dayOfWeek = date =>
     date.toLocaleDateString('sv-SE', {
         weekday: 'short'
+    });
+
+const dateOfYear = date =>
+    dateOfYear.toLocaleString('sv-SE', {
+        day: 'numeric',
+        month: 'numeric'
     });
 
 const formatTime = date => date.toLocaleString('sv-SE').substr(10, 6);
