@@ -9,10 +9,6 @@ const error = document.querySelector('#error');
 const eatToday = document.querySelector('#eatToday');
 const sleepToday = document.querySelector('#sleepToday');
 const babyNames = document.querySelectorAll('.babyName');
-const daySchedule = document.querySelector('#daySchedule');
-const sleptTotal = document.querySelector('#sleptTotal');
-const ateTotal = document.querySelector('#ateTotal');
-const sleptLongest = document.querySelector('#sleptLongest');
 
 function initializeInputs() {
     let now = toLocalTimeString(new Date());
@@ -43,21 +39,11 @@ function initializeInputs() {
 }
 
 function renderActivities() {
-    daySchedule.innerHTML = '';
-    const svg = renderDaySchedulePlot(activities);
-    daySchedule.appendChild(svg);
-
-    sleptTotal.innerHTML = '';
-    const sleptTotalPlot = renderSleptTotalPlot(activities);
-    sleptTotal.appendChild(sleptTotalPlot);
-
-    ateTotal.innerHTML = '';
-    const ateTotalPlot = renderAteTotalPlot(activities);
-    ateTotal.appendChild(ateTotalPlot);
-
-    sleptLongest.innerHTML = '';
-    const sleptLongestPlot = renderSleptLongestPlot(activities);
-    sleptLongest.appendChild(sleptLongestPlot);
+    const activitiesByDay = groupByDay(activities);
+    renderDaySchedulePlot('#daySchedule', activitiesByDay);
+    renderSleptTotalPlot('#sleptTotal', activitiesByDay);
+    renderAteTotalPlot('#ateTotal', activitiesByDay);
+    renderSleptLongestPlot('#sleptLongest', activitiesByDay);
 
     renderTodayLists(activities);
 }

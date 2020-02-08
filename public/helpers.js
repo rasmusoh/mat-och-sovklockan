@@ -19,7 +19,10 @@ function groupByDay(activities) {
         }
         days[date].push(activity);
     }
-    return days;
+    return Object.entries(days).map(([k, v]) => ({
+        day: parseInt(k),
+        activities: v
+    }));
 }
 
 const getSleptTotal = activities =>

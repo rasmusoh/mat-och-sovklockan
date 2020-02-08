@@ -9,6 +9,7 @@ const textStyles = `.xsmall { color:black; font: italic 10px sans-serif; }
 
 class ResponsiveGraph {
     constructor({
+        querySelector,
         xFrom,
         xTo,
         xStep,
@@ -22,6 +23,7 @@ class ResponsiveGraph {
         totalHeight,
         styles
     }) {
+        this.querySelector = querySelector;
         this.xFrom = xFrom;
         this.xTo = xTo;
         this.xStep = xStep;
@@ -147,15 +149,16 @@ class ResponsiveGraph {
         for (const el of this.graphElements) {
             svg.appendChild(el);
         }
-
-        return svg;
+        const el = document.querySelector(this.querySelector);
+        el.innerHTML = '';
+        el.appendChild(svg);
     }
 }
 
-function renderSleptTotalPlot(activities) {
-    const byDay = groupByDay(activities);
-    const days = Object.keys(byDay);
+function renderSleptTotalPlot(querySelector, activitiesByDay) {
+    const days = activitiesByDay.map(x => x.day);
     const options = {
+        querySelector: querySelector,
         xFrom: parseInt(days[0]),
         xTo: parseInt(days[days.length - 1]),
         xStep: 36e5 * 24,
@@ -165,19 +168,23 @@ function renderSleptTotalPlot(activities) {
         yTo: 24,
         yStep: 4,
         yGetLegend: y => y + ' h',
-        yAxisHeight: 10,
+        yAxisHeight: 20,
         totalHeight: 260,
         styles: textStyles
     };
     var graph = new ResponsiveGraph(options);
-    graph.addBars(days, Object.values(byDay).map(getSleptTotal), '#34aed4');
+    graph.addBars(
+        days,
+        activitiesByDay.map(x => getSleptTotal(x.activities)),
+        '#34aed4'
+    );
     return graph.render();
 }
 
-function renderAteTotalPlot(activities) {
-    const byDay = groupByDay(activities);
-    const days = Object.keys(byDay);
+function renderAteTotalPlot(querySelector, activitiesByDay) {
+    const days = activitiesByDay.map(x => x.day);
     const options = {
+        querySelector: querySelector,
         xFrom: parseInt(days[0]),
         xTo: parseInt(days[days.length - 1]),
         xStep: 36e5 * 24,
@@ -194,18 +201,18 @@ function renderAteTotalPlot(activities) {
     var graph = new ResponsiveGraph(options);
     graph.addBars(
         days,
-        Object.values(byDay).map(
-            activities => activities.filter(x => x.type === 'eat').length
+        activitiesByDay.map(
+            x => x.activities.filter(x => x.type === 'eat').length
         ),
         '#d62972'
     );
     return graph.render();
 }
 
-function renderDaySchedulePlot(activities) {
-    const byDay = groupByDay(activities);
-    const days = Object.keys(byDay).map(x => parseInt(x));
+function renderDaySchedulePlot(querySelector, activitiesByDay) {
+    const days = activitiesByDay.map(x => x.day);
     const options = {
+        querySelector: querySelector,
         xFrom: days[0],
         xTo: days[days.length - 1],
         xStep: 36e5 * 24,
@@ -222,13 +229,13 @@ function renderDaySchedulePlot(activities) {
     var graph = new ResponsiveGraph(options);
     graph.addStackedBars(
         days,
-        Object.values(byDay).map(day =>
-            day
+        activitiesByDay.map(x =>
+            x.activities
                 .filter(x => x.type === 'sleep')
                 .map(x => x.from.getHours() + x.from.getMinutes() / 60)
         ),
-        Object.values(byDay).map(day =>
-            day
+        activitiesByDay.map(x =>
+            x.activities
                 .filter(x => x.type === 'sleep')
                 .map(x => x.to.getHours() + x.to.getMinutes() / 60)
         ),
@@ -236,13 +243,13 @@ function renderDaySchedulePlot(activities) {
     );
     graph.addStackedBars(
         days,
-        Object.values(byDay).map(day =>
-            day
+        activitiesByDay.map(x =>
+            x.activities
                 .filter(x => x.type === 'eat')
                 .map(x => x.from.getHours() + x.from.getMinutes() / 60)
         ),
-        Object.values(byDay).map(day =>
-            day
+        activitiesByDay.map(x =>
+            x.activities
                 .filter(x => x.type === 'eat')
                 .map(x => x.to.getHours() + (x.to.getMinutes() + 20) / 60)
         ),
@@ -251,10 +258,10 @@ function renderDaySchedulePlot(activities) {
     return graph.render();
 }
 
-function renderSleptLongestPlot(activities) {
-    const byDay = groupByDay(activities);
-    const days = Object.keys(byDay);
+function renderSleptLongestPlot(querySelector, activitiesByDay) {
+    const days = activitiesByDay.map(x => x.day);
     const options = {
+        querySelector: querySelector,
         xFrom: parseInt(days[0]),
         xTo: parseInt(days[days.length - 1]),
         xStep: 36e5 * 24,
@@ -271,8 +278,8 @@ function renderSleptLongestPlot(activities) {
     var graph = new ResponsiveGraph(options);
     graph.addBars(
         days,
-        Object.values(byDay).map(activities =>
-            activities.reduce(
+        activitiesByDay.map(x =>
+            x.activities.reduce(
                 (max, next) =>
                     getDuration(next) > max ? getDuration(next) : max,
                 0
