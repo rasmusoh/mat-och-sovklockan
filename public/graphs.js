@@ -22,10 +22,6 @@ class ResponsiveGraph {
         totalHeight,
         styles
     }) {
-        if (this.xFrom >= this.xTo)
-            throw new Error('xFrom cannot be smaller than xTo');
-        if (this.yFrom >= this.yTo)
-            throw new Error('yFrom cannot be smaller than yTo');
         this.xFrom = xFrom;
         this.xTo = xTo;
         this.xStep = xStep;
@@ -60,7 +56,17 @@ class ResponsiveGraph {
 
     renderYAxis() {
         const container = getNode('g');
-        for (var y = this.yFrom; y < this.yTo; y += this.yStep) {
+        const ys = [];
+        if (this.yFrom < this.yTo) {
+            for (var y = this.yFrom; y < this.yTo; y += this.yStep) {
+                ys.push(y);
+            }
+        } else {
+            for (var y = this.yFrom; y > this.yTo; y -= this.yStep) {
+                ys.push(y);
+            }
+        }
+        for (const y of ys) {
             const legend = getNode('text', {
                 class: 'xsmall',
                 x: 0,
@@ -86,12 +92,30 @@ class ResponsiveGraph {
             const legend = getNode('text', {
                 class: 'xsmall',
                 x: this.getX(x),
-                y: this.yAxisHeight
+                y: this.yAxisHeight / 2
             });
             legend.textContent = this.xGetLegend(x);
             container.appendChild(legend);
         }
         return container;
+    }
+
+    addStackedBars(xs, yFroms, yTos, color) {
+        const barWidth = 0.9 * ((100 - this.xAxisWidthPrecentage) / xs.length);
+        const container = getNode('g');
+        for (let i = 0; i < xs.length; i++) {
+            for (let j = 0; j < yFroms[i].length; j++) {
+                const r = getNode('rect', {
+                    x: this.getX(xs[i]),
+                    y: this.getY(yFroms[i][j]),
+                    width: barWidth + '%',
+                    height: this.getY(yTos[i][j]) - this.getY(yFroms[i][j]),
+                    fill: color
+                });
+                container.appendChild(r);
+            }
+        }
+        this.graphElements.push(container);
     }
 
     addBars(xs, ys, color) {
@@ -163,7 +187,7 @@ function renderAteTotalPlot(activities) {
         yTo: 20,
         yStep: 4,
         yGetLegend: y => y + ' ggr',
-        yAxisHeight: 10,
+        yAxisHeight: 30,
         totalHeight: 260,
         styles: textStyles
     };
@@ -179,83 +203,50 @@ function renderAteTotalPlot(activities) {
 }
 
 function renderStackedBarsPlot(activities) {
-    let byDay = groupByDay(activities),
-        barWidth = 15,
-        margin = 3,
-        timeAxisWidth = 10,
-        headerHeight = 20,
-        minHeight = 2,
-        pixelsPerHour = 10,
-        bars = 0;
-    const timeToPixel = date =>
-        headerHeight +
-        date.getHours() * pixelsPerHour +
-        (date.getMinutes() * pixelsPerHour) / 60;
-
-    const svg = getNode('svg', {
-        width: '100%',
-        height: '400'
-    });
-    const style = getNode('style');
-    svg.appendChild(style);
-    style.textContent =
-        '.xsmall { color:black; font: italic 10px sans-serif; } .small { color:black; font: italic 13px sans-serif; }';
-    for (const hour of [4, 8, 12, 16, 20, 24]) {
-        const y = headerHeight + hour * pixelsPerHour;
-        const clockText = getNode('text', {
-            class: 'xsmall',
-            x: 0,
-            y: y + 4
-        });
-        clockText.textContent = ('00' + hour).slice(-2) + ':00';
-        const line = getNode('line', {
-            x1: 45,
-            x2: '100%',
-            y1: y,
-            y2: y,
-            stroke: 'lightgrey'
-        });
-        svg.appendChild(clockText);
-        svg.appendChild(line);
-    }
-
-    for (const [date, activities] of Object.entries(byDay).slice(-5)) {
-        var weekday = getNode('text', {
-            class: 'small',
-            x: `${timeAxisWidth + (margin + barWidth) * bars}%`,
-            y: 10
-        });
-        weekday.textContent = dayOfWeek(activities[0].from);
-        svg.appendChild(weekday);
-        for (const activity of activities) {
-            fromPixel = timeToPixel(activity.from);
-            toPixel = timeToPixel(activity.to);
-            var r = getNode('rect', {
-                x: `${timeAxisWidth + bars * (barWidth + margin)}%`,
-                y: fromPixel,
-                width: barWidth + '%',
-                height: Math.max(toPixel - fromPixel, minHeight),
-                fill: activity.type === 'eat' ? '#d62972' : '#34aed4'
-            });
-            svg.appendChild(r);
-        }
-        const sleptTotal = getSleptTotal(activities);
-        const ateTotal = activities.filter(x => x.type === 'eat').length;
-        const sleptTotalText = getNode('text', {
-            class: 'small',
-            x: timeAxisWidth + bars * (barWidth + margin) + '%',
-            y: 300
-        });
-        const ateTotalText = getNode('text', {
-            class: 'small',
-            x: timeAxisWidth + bars * (barWidth + margin) + '%',
-            y: 320
-        });
-        sleptTotalText.textContent = sleptTotal + ' h';
-        ateTotalText.textContent = ateTotal + ' ggr';
-        svg.appendChild(sleptTotalText);
-        svg.appendChild(ateTotalText);
-        bars++;
-    }
-    return svg;
+    const byDay = groupByDay(activities);
+    const days = Object.keys(byDay).map(x => parseInt(x));
+    const options = {
+        xFrom: days[0],
+        xTo: days[days.length - 1],
+        xStep: 36e5 * 24,
+        xGetLegend: x => dayOfWeek(new Date(x)),
+        xAxisWidthPrecentage: 10,
+        yFrom: 24,
+        yTo: 0,
+        yStep: 4,
+        yGetLegend: y => ('00' + y).slice(-2) + ':00',
+        yAxisHeight: 30,
+        totalHeight: 260,
+        styles: textStyles
+    };
+    var graph = new ResponsiveGraph(options);
+    graph.addStackedBars(
+        days,
+        Object.values(byDay).map(day =>
+            day
+                .filter(x => x.type === 'sleep')
+                .map(x => x.from.getHours() + x.from.getMinutes() / 60)
+        ),
+        Object.values(byDay).map(day =>
+            day
+                .filter(x => x.type === 'sleep')
+                .map(x => x.to.getHours() + x.to.getMinutes() / 60)
+        ),
+        '#34aed4'
+    );
+    graph.addStackedBars(
+        days,
+        Object.values(byDay).map(day =>
+            day
+                .filter(x => x.type === 'eat')
+                .map(x => x.from.getHours() + x.from.getMinutes() / 60)
+        ),
+        Object.values(byDay).map(day =>
+            day
+                .filter(x => x.type === 'eat')
+                .map(x => x.to.getHours() + (x.to.getMinutes() + 20) / 60)
+        ),
+        '#d62972'
+    );
+    return graph.render();
 }
