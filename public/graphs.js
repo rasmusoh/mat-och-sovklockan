@@ -155,20 +155,24 @@ class ResponsiveGraph {
     }
 }
 
-const byDayPlotSettings = days => ({
-    xFrom: days[0],
-    xTo: days[days.length - 1],
-    xStep: 36e5 * 24,
-    xGetLegend: x =>
-        days.length <= 7 ? dayOfWeek(new Date(x)) : dateOfYear(new Date(x)),
-    xAxisWidthPrecentage: 10,
-    yAxisHeight: 20,
-    totalHeight: 260,
-    styles: textStyles
-});
+const byDayPlotSettings = days => {
+    const maxStepsXAxis = 10;
+    const stepSizeXAxis = Math.floor(1 + days.length / maxStepsXAxis);
+    return {
+        xFrom: days[0],
+        xTo: days[days.length - 1] + 36e5 * 24,
+        xStep: stepSizeXAxis * 36e5 * 24,
+        xGetLegend: x =>
+            days.length <= 7 ? dayOfWeek(new Date(x)) : dateOfYear(new Date(x)),
+        xAxisWidthPrecentage: 10,
+        yAxisHeight: 20,
+        totalHeight: 260,
+        styles: textStyles
+    };
+};
 
 function renderSleptTotalPlot(querySelector, activitiesByDay) {
-    const days = activitiesByDay.map(x => x.day);
+    const days = activitiesByDay.map(x => x.day.getTime());
     const options = {
         ...byDayPlotSettings(days),
         querySelector: querySelector,
@@ -187,7 +191,7 @@ function renderSleptTotalPlot(querySelector, activitiesByDay) {
 }
 
 function renderAteTotalPlot(querySelector, activitiesByDay) {
-    const days = activitiesByDay.map(x => x.day);
+    const days = activitiesByDay.map(x => x.day.getTime());
     const options = {
         ...byDayPlotSettings(days),
         querySelector: querySelector,
@@ -208,7 +212,7 @@ function renderAteTotalPlot(querySelector, activitiesByDay) {
 }
 
 function renderDaySchedulePlot(querySelector, activitiesByDay) {
-    const days = activitiesByDay.map(x => x.day);
+    const days = activitiesByDay.map(x => x.day.getTime());
     const options = {
         ...byDayPlotSettings(days),
         querySelector: querySelector,
@@ -250,7 +254,7 @@ function renderDaySchedulePlot(querySelector, activitiesByDay) {
 }
 
 function renderSleptLongestPlot(querySelector, activitiesByDay) {
-    const days = activitiesByDay.map(x => x.day);
+    const days = activitiesByDay.map(x => x.day.getTime());
     const options = {
         ...byDayPlotSettings(days),
         querySelector: querySelector,

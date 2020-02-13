@@ -24,7 +24,6 @@ async function migrate() {
     console.log('uri: ' + uri);
 
     for (const activity of activities) {
-        activity.type = activity.type === 'ate' ? 'eat' : 'sleep';
         const response = await fetch(`${toBaseUrl}${uri}/activities`, {
             method: 'POST',
             body: JSON.stringify(activity),

@@ -13,14 +13,14 @@ function groupByDay(activities) {
         .sort((a, b) => a.from - b.from);
     const days = {};
     for (const activity of activities) {
-        const date = startOfDay(activity.from).getTime();
+        const date = startOfDay(activity.from).toString();
         if (!days[date]) {
             days[date] = [];
         }
         days[date].push(activity);
     }
     return Object.entries(days).map(([k, v]) => ({
-        day: parseInt(k),
+        day: new Date(k),
         activities: v
     }));
 }
