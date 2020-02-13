@@ -11,6 +11,22 @@ const error = document.querySelector('#error');
 const eatToday = document.querySelector('#eatToday');
 const sleepToday = document.querySelector('#sleepToday');
 const babyNames = document.querySelectorAll('.babyName');
+const addToHomescreen = document.querySelector('#addToHomescreen');
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+    addToHomescreen.style.display = '';
+    deferredPrompt = e;
+});
+
+addToHomescreen.onclick = e => {
+    deferredPrompt.promt();
+    deferredPrompt.userChoice.then(result => {
+        if (result.outcome === 'accepted') {
+            addToHomescreen.style.display = 'none';
+        }
+    });
+};
 
 function initializeInputs() {
     let now = toLocalTimeString(new Date());
