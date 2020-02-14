@@ -15,6 +15,7 @@ const addToHomescreen = document.querySelector('#addToHomescreen');
 
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', e => {
+    console.log("we're a PWA!");
     addToHomescreen.style.display = '';
     deferredPrompt = e;
 });
@@ -38,7 +39,7 @@ if ('serviceWorker' in navigator) {
 }
 
 addToHomescreen.onclick = e => {
-    deferredPrompt.promt();
+    deferredPrompt.prompt();
     deferredPrompt.userChoice.then(result => {
         if (result.outcome === 'accepted') {
             addToHomescreen.style.display = 'none';
