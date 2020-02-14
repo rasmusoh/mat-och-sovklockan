@@ -2,8 +2,10 @@
     "name": "Mat och sovklockan",
     "short_name": "Mat&sovklockan",
     "display": "fullscreen",
-    "background_color": "#fff",
+    "background_color": "#fffff8",
+    "theme_color": "#fffff8",
     "description": "Håll reda på hur din bebis äter och sover!",
+    "start_url": "/",
     "icons": [
         {
             "src": "images/logo48.png",
