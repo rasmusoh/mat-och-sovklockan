@@ -3,6 +3,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const short = require('short-uuid');
 const uuid = require('uuid/v4');
+const manifest = require('./manifest');
+
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -51,6 +53,11 @@ migrateDb(pool);
 
 app.get('/', (_, response) => {
     response.sendFile(`${__dirname}/views/index.html`);
+});
+
+app.get('/manifest.webmanifest', (request, response) => {
+    manifest.start_url = decodeURIComponent(request.query.start_url);
+    response.send(JSON.stringify(manifest));
 });
 
 app.post('/', async (request, response) => {
