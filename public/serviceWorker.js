@@ -19,6 +19,9 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
+    if (event.request.url.match('^.*(/activities).*$')) {
+        return false;
+    }
     event.respondWith(
         caches.match(event.request).then(function(response) {
             // Cache hit - return response
